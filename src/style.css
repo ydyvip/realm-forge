@@ -236,6 +236,36 @@ textarea {
 .tblock:hover {
   border-color: var(--accent);
 }
+.lang-switch {
+  align-self: center;
+  display: flex;
+  border: 1px solid var(--rule2);
+  background: var(--paper);
+  border-radius: 2px;
+  margin-left: auto;
+  overflow: hidden;
+}
+.lang-switch button {
+  appearance: none;
+  background: none;
+  border: 0;
+  color: var(--ink2);
+  font: 600 13px var(--sans);
+  padding: 3px 10px;
+  min-height: 26px;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+}
+.lang-switch button + button {
+  border-left: 1px solid var(--rule2);
+}
+.lang-switch button:hover {
+  color: var(--ink);
+}
+.lang-switch button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
 .tb-cell {
   display: flex;
   flex-direction: column;

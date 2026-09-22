@@ -70,29 +70,29 @@ function fillAffilSelects() {
   const ch = state.char,
     fac = facById(ch.factionId);
   $("#selFac").innerHTML =
-    '<option value="">无所属势力</option>' +
+    `<option value="">${t("无所属势力")}</option>` +
     state.factions
       .map((f) => `<option value="${f.id}">${esc(f.name)}</option>`)
       .join("");
   $("#selFac").value = fac ? fac.id : "";
   $("#selRank").innerHTML = RANKS.map(
-    (r) => `<option value="${r}">${r}</option>`,
+    (r) => `<option value="${r}">${t(r)}</option>`,
   ).join("");
   $("#selRank").value = ch.rank || "成员";
   $("#selRank").disabled = !fac;
   $("#selLoc").innerHTML =
-    '<option value="">未指定</option>' +
+    `<option value="">${t("未指定")}</option>` +
     state.locs
       .map((l) => `<option value="${l.id}">${esc(l.name)}</option>`)
       .join("");
   $("#selLoc").value = locById(ch.locId) ? ch.locId : "";
   $("#facDesc").textContent = !fac
-    ? "不隶属任何势力，没有额外加成。"
+    ? t("不隶属任何势力，没有额外加成。")
     : !fac.favored
-      ? `${fac.kind}，没有偏好体系。`
+      ? t("{0}，没有偏好体系。", t(fac.kind))
       : fac.favored === ch.system
-        ? `${fac.kind}。使用偏好的「${SYSTEMS[fac.favored].name}」体系，威力 +5%。`
-        : `${fac.kind}。偏好「${SYSTEMS[fac.favored].name}」体系，你的体系不同，没有加成。`;
+        ? t("{0}。使用偏好的「{1}」体系，威力 +5%。", t(fac.kind), t(SYSTEMS[fac.favored].name))
+        : t("{0}。偏好「{1}」体系，你的体系不同，没有加成。", t(fac.kind), t(SYSTEMS[fac.favored].name));
 }
 function affilText(ch, d) {
   const l = locById(ch.locId);
@@ -188,15 +188,15 @@ function renderMapSvg() {
   });
   const C = 2 * Math.PI * 21;
   state.locs.forEach((l) => {
-    const t = LOC_BY_ID[l.type],
+    const lt = LOC_BY_ID[l.type],
       idx = abnormality(localWorld(state.world, l)),
       f = facById(l.ctrl),
       sel = l.id === state.selLoc;
     const cnt = state.roster.filter((c) => c.locId === l.id).length;
-    s += `<g class="lnode${sel ? " sel" : ""}" data-loc="${l.id}" transform="translate(${mx(l).toFixed(1)},${my(l).toFixed(1)})" tabindex="0" role="button" aria-label="${esc(l.name)}，${t.name}，违常指数 ${Math.round(idx)}${f ? "，由" + esc(f.name) + "控制" : ""}">
+    s += `<g class="lnode${sel ? " sel" : ""}" data-loc="${l.id}" transform="translate(${mx(l).toFixed(1)},${my(l).toFixed(1)})" tabindex="0" role="button" aria-label="${esc(l.name)}，${esc(t(lt.name))}，${t("违常指数")} ${Math.round(idx)}${f ? "，" + t("由") + esc(t(f.name)) + t("控制") : ""}">
       ${f ? `<circle r="36" class="mp-halo" style="fill:${facColor(f)};stroke:${facColor(f)}"/>` : ""}
       <circle r="21" class="mp-ringbg"/><circle r="21" class="mp-ring" stroke-dasharray="${((idx / 100) * C).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90)"/>
-      <g class="lg">${glyphSVG(t.glyph)}</g>
+      <g class="lg">${glyphSVG(lt.glyph)}</g>
       ${sel ? '<circle r="29" class="mp-sel"/>' : ""}
       <text class="mp-n" y="-27" text-anchor="middle">${Math.round(idx)}</text>
       <text class="mp-t" y="41" text-anchor="middle">${esc(l.name)}</text>
@@ -208,10 +208,10 @@ function renderMapSvg() {
 function renderMapKey() {
   $("#mapKey").innerHTML =
     LOC_TYPES.map(
-      (t) =>
-        `<span class="mk"><svg viewBox="-17 -17 34 34" class="mk-g" aria-hidden="true"><g class="lg">${glyphSVG(t.glyph)}</g></svg>${t.name}</span>`,
+      (td) =>
+        `<span class="mk"><svg viewBox="-17 -17 34 34" class="mk-g" aria-hidden="true"><g class="lg">${glyphSVG(td.glyph)}</g></svg>${esc(t(td.name))}</span>`,
     ).join("") +
-    '<span class="mk-note">外圈红弧 = 局部违常指数，色晕 = 控制势力，右上数字 = 驻扎角色</span>';
+    `<span class="mk-note">${t("外圈红弧 = 局部违常指数，色晕 = 控制势力，右上数字 = 驻扎角色")}</span>`;
 }
 function renderLocChips() {
   $("#locChips").innerHTML = state.locs
@@ -227,48 +227,47 @@ function locLawHTML(l) {
     act = PHENOMENA.filter((p) => p.on(lw.dials));
   const rows = DIALS.map((d) => {
     const off = (l.off && l.off[d.id]) || 0;
-    return `<div class="lrow"><span>${d.name}</span><span class="rv">${dialReadout(d.id, lw.dials[d.id])}</span><em class="${off ? "off" : ""}">${off ? (off > 0 ? "+" : "") + off : "—"}</em></div>`;
+    return `<div class="lrow"><span>${esc(t(d.name))}</span><span class="rv">${dialReadout(d.id, lw.dials[d.id])}</span><em class="${off ? "off" : ""}">${off ? (off > 0 ? "+" : "") + off : "—"}</em></div>`;
   }).join("");
   const mods = SYS_IDS.map(
     (k) =>
-      `<div class="mod c-${k}"><span class="nm">${SYSTEMS[k].name}</span><div class="mini"><i style="width:${clamp((m.sys[k] / 1.9) * 100, 2, 100).toFixed(1)}%"></i><u></u></div><span class="mv">×${m.sys[k].toFixed(2)}</span></div>`,
+      `<div class="mod c-${k}"><span class="nm">${esc(t(SYSTEMS[k].name))}</span><div class="mini"><i style="width:${clamp((m.sys[k] / 1.9) * 100, 2, 100).toFixed(1)}%"></i><u></u></div><span class="mv">×${m.sys[k].toFixed(2)}</span></div>`,
   ).join("");
-  return `<div class="wr-read"><div class="lrows">${rows}</div><div class="wr-num"><span class="num big">${Math.round(m.index)}</span><span class="small">局部违常指数<br>${abnLabel(m.index)}</span></div></div>
+  return `<div class="wr-read"><div class="lrows">${rows}</div><div class="wr-num"><span class="num big">${Math.round(m.index)}</span><span class="small">${t("局部违常指数")}<br>${abnLabel(m.index)}</span></div></div>
     <div class="mods" style="margin-top:14px">${mods}</div>
-    <p class="small" style="margin-top:12px">局部异象：${act.length ? act.map((p) => `<span class="tag">${p.name}</span>`).join(" ") : "无"}</p>`;
+    <p class="small" style="margin-top:12px">${t("局部异象")}${t("：")}${act.length ? act.map((p) => `<span class="tag">${esc(t(p.name))}</span>`).join(" ") : t("无")}</p>`;
 }
 const fmtOff = (v) => (v > 0 ? "+" : "") + v;
 function renderLocPanel() {
   const el = $("#locPanel"),
     l = locById(state.selLoc);
   if (!l) {
-    el.innerHTML =
-      '<div class="empty">地图上还没有地点，点「新增地点」。</div>';
+    el.innerHTML = `<div class="empty">${t("地图上还没有地点，点「新增地点」。")}</div>`;
     return;
   }
-  const t = LOC_BY_ID[l.type];
+  const ltype = LOC_BY_ID[l.type];
   const linked = (id) =>
     state.routes.some(
       (e) => (e[0] === l.id && e[1] === id) || (e[1] === l.id && e[0] === id),
     );
   const here = state.roster.filter((c) => c.locId === l.id);
   el.innerHTML = `
-  <div class="panel"><div class="panel-h"><h3>地点档案</h3><small>${t.name}</small></div><div class="body">
-    <label class="field"><span>名称</span><span class="inline"><input id="locName" type="text" maxlength="14" value="${esc(l.name)}" autocomplete="off"><button class="btn" type="button" data-loc-act="rename">随机名</button></span></label>
-    <label class="field"><span>类型</span><select id="locType">${LOC_TYPES.map((x) => `<option value="${x.id}"${x.id === l.type ? " selected" : ""}>${x.name}</option>`).join("")}</select><p class="small">${t.desc}</p></label>
-    <label class="field"><span>控制势力</span><select id="locCtrl"><option value="">无人控制</option>${state.factions.map((f) => `<option value="${f.id}"${f.id === l.ctrl ? " selected" : ""}>${esc(f.name)}</option>`).join("")}</select></label>
-    <div class="btnrow tight"><button class="btn primary" type="button" data-loc-act="sim">在此推演</button><button class="btn" type="button" data-loc-act="del">删除地点</button></div>
+  <div class="panel"><div class="panel-h"><h3>${t("地点档案")}</h3><small>${esc(t(ltype.name))}</small></div><div class="body">
+    <label class="field"><span>${t("名称")}</span><span class="inline"><input id="locName" type="text" maxlength="14" value="${esc(l.name)}" autocomplete="off"><button class="btn" type="button" data-loc-act="rename">${t("随机名")}</button></span></label>
+    <label class="field"><span>${t("类型")}</span><select id="locType">${LOC_TYPES.map((x) => `<option value="${x.id}"${x.id === l.type ? " selected" : ""}>${esc(t(x.name))}</option>`).join("")}</select><p class="small">${esc(t(ltype.desc))}</p></label>
+    <label class="field"><span>${t("控制势力")}</span><select id="locCtrl"><option value="">${t("无人控制")}</option>${state.factions.map((f) => `<option value="${f.id}"${f.id === l.ctrl ? " selected" : ""}>${esc(f.name)}</option>`).join("")}</select></label>
+    <div class="btnrow tight"><button class="btn primary" type="button" data-loc-act="sim">${t("在此推演")}</button><button class="btn" type="button" data-loc-act="del">${t("删除地点")}</button></div>
   </div></div>
-  <div class="panel"><div class="panel-h"><h3>局部法则</h3><small>世界旋钮 + 该地偏移</small></div><div class="body">
+  <div class="panel"><div class="panel-h"><h3>${t("局部法则")}</h3><small>${t("世界旋钮 + 该地偏移")}</small></div><div class="body">
     <div id="locLaw">${locLawHTML(l)}</div>
-    <details class="offs"><summary>微调局部偏移</summary>${DIALS.map((d) => {
+    <details class="offs"><summary>${t("微调局部偏移")}</summary>${DIALS.map((d) => {
       const v = (l.off && l.off[d.id]) || 0;
-      return `<div class="offrow"><span class="lab">${d.name}</span>${gaugeHTML({ min: -40, max: 40, value: v, mode: "dev", tone: "ink", base: 0.5, attrs: `data-off="${d.id}"`, label: d.name + "偏移" })}<span class="val" data-offv="${d.id}">${fmtOff(v)}</span></div>`;
+      return `<div class="offrow"><span class="lab">${esc(t(d.name))}</span>${gaugeHTML({ min: -40, max: 40, value: v, mode: "dev", tone: "ink", base: 0.5, attrs: `data-off="${d.id}"`, label: t(d.name) + t("偏移") })}<span class="val" data-offv="${d.id}">${fmtOff(v)}</span></div>`;
     }).join(
       "",
-    )}<div class="btnrow tight"><button class="btn" type="button" data-loc-act="resetoff">恢复类型默认偏移</button></div></details>
+    )}<div class="btnrow tight"><button class="btn" type="button" data-loc-act="resetoff">${t("恢复类型默认偏移")}</button></div></details>
   </div></div>
-  <div class="panel"><div class="panel-h"><h3>路线与驻扎</h3><small>点击切换是否与本地相连</small></div><div class="body">
+  <div class="panel"><div class="panel-h"><h3>${t("路线与驻扎")}</h3><small>${t("点击切换是否与本地相连")}</small></div><div class="body">
     <div class="chips" style="margin-top:0">${
       state.locs
         .filter((x) => x.id !== l.id)
@@ -276,9 +275,9 @@ function renderLocPanel() {
           (o) =>
             `<button class="chip" type="button" data-route="${o.id}" aria-pressed="${linked(o.id)}">${esc(o.name)}</button>`,
         )
-        .join("") || '<span class="small">没有其他地点。</span>'
+        .join("") || `<span class="small">${t("没有其他地点。")}</span>`
     }</div>
-    <p class="small" style="margin-top:12px">驻扎角色：${here.length ? here.map((c) => `<span class="tag hue c-${c.system}">${esc(c.name)}</span>`).join(" ") : "无（在角色工坊里设置「驻地」）"}</p>
+    <p class="small" style="margin-top:12px">${t("驻扎角色")}${t("：")}${here.length ? here.map((c) => `<span class="tag hue c-${c.system}">${esc(c.name)}</span>`).join(" ") : t("无（在角色工坊里设置「驻地」）")}</p>
   </div></div>`;
 }
 function renderMap() {
@@ -296,7 +295,7 @@ function selectLoc(id) {
 
 function addLoc() {
   if (state.locs.length >= 16) {
-    toast("地点最多 16 个");
+    toast(t("地点最多 16 个"));
     return;
   }
   const r = makeRng("add|" + Math.random()),
@@ -339,7 +338,7 @@ function addLoc() {
   state.selLoc = loc.id;
   saveUniverse();
   renderMap();
-  toast("已新增地点：" + loc.name);
+  toast(t("已新增地点：") + loc.name);
 }
 function delLoc(id) {
   state.locs = state.locs.filter((l) => l.id !== id);
@@ -377,7 +376,7 @@ function regenMap() {
   saveChar();
   fixCampAfterMapChange();
   renderMap();
-  toast("已按当前世界重新生成地图");
+  toast(t("已按当前世界重新生成地图"));
 }
 function svgPoint(svg, e) {
   if (!svg.createSVGPoint || !svg.getScreenCTM) return null;
@@ -512,11 +511,11 @@ function bindMap() {
       setTab("sim");
     } else if (a.dataset.locAct === "del") {
       if (state.locs.length <= 1) {
-        toast("至少保留一个地点");
+        toast(t("至少保留一个地点"));
         return;
       }
       delLoc(l.id);
-      toast("已删除地点");
+      toast(t("已删除地点"));
     }
   });
 }
@@ -532,49 +531,49 @@ function renderFacAll() {
   renderRelEdit();
 }
 function renderFacList() {
-  $("#facCount").textContent = `${state.factions.length} 个势力`;
+  $("#facCount").textContent = `${state.factions.length} ${t("个势力")}`;
   $("#facList").innerHTML =
     state.factions
       .map((f) => {
         const n = state.roster.filter((c) => c.factionId === f.id).length,
           home = locById(f.home);
-        return `<button type="button" class="fcard${f.id === state.selFac ? " on" : ""}" data-fac="${f.id}" style="--fc:${facColor(f)}"><span class="fdot"></span><span class="fbody"><b>${esc(f.name)}</b><small>${f.kind}　${"●".repeat(f.power)}${"○".repeat(5 - f.power)}${f.favored ? "　" + SYSTEMS[f.favored].name : ""}　${n} 人${home ? "　" + esc(home.name) : ""}</small></span></button>`;
+        return `<button type="button" class="fcard${f.id === state.selFac ? " on" : ""}" data-fac="${f.id}" style="--fc:${facColor(f)}"><span class="fdot"></span><span class="fbody"><b>${esc(f.name)}</b><small>${esc(t(f.kind))}　${"●".repeat(f.power)}${"○".repeat(5 - f.power)}${f.favored ? "　" + esc(t(SYSTEMS[f.favored].name)) : ""}　${n} ${t("人")}${home ? "　" + esc(home.name) : ""}</small></span></button>`;
       })
-      .join("") || '<div class="empty">还没有势力。</div>';
+      .join("") || `<div class="empty">${t("还没有势力。")}</div>`;
 }
 function renderFacEdit() {
   const f = facById(state.selFac),
     el = $("#facEdit");
   if (!f) {
-    el.innerHTML = '<div class="empty">选择或新增一个势力。</div>';
+    el.innerHTML = `<div class="empty">${t("选择或新增一个势力。")}</div>`;
     return;
   }
   const fv = factionRel(state.frel),
     members = state.roster.filter((c) => c.factionId === f.id).length;
   const sel = (id, list, cur) =>
     `<select id="${id}">${list.map(([v, n]) => `<option value="${v}"${v === cur ? " selected" : ""}>${n}</option>`).join("")}</select>`;
-  el.innerHTML = `<div class="panel-h"><h3>势力档案</h3><small>名册中有 ${members} 名成员</small></div><div class="body">
-    <label class="field"><span>名称</span><span class="inline"><input id="facName" type="text" maxlength="12" value="${esc(f.name)}" autocomplete="off"><button class="btn" type="button" data-fac-act="rename">随机名</button></span></label>
-    <div class="fgrid"><label class="field"><span>类型</span>${sel(
+  el.innerHTML = `<div class="panel-h"><h3>${t("势力档案")}</h3><small>${t("名册中有")} ${members} ${t("名成员")}</small></div><div class="body">
+    <label class="field"><span>${t("名称")}</span><span class="inline"><input id="facName" type="text" maxlength="12" value="${esc(f.name)}" autocomplete="off"><button class="btn" type="button" data-fac-act="rename">${t("随机名")}</button></span></label>
+    <div class="fgrid"><label class="field"><span>${t("类型")}</span>${sel(
       "facKind",
-      FACTION_KINDS.map((k) => [k, k]),
+      FACTION_KINDS.map((k) => [k, t(k)]),
       f.kind,
-    )}</label><label class="field"><span>对异常的态度</span>${sel(
+    )}</label><label class="field"><span>${t("对异常的态度")}</span>${sel(
       "facAtt",
-      ATTITUDES.map((k) => [k, k]),
+      ATTITUDES.map((k) => [k, t(k)]),
       f.attitude,
     )}</label></div>
-    <div class="fgrid"><label class="field"><span>偏好体系</span>${sel("facFav", [["", "无偏好"], ...SYS_IDS.map((k) => [k, SYSTEMS[k].name])], f.favored || "")}</label><label class="field"><span>总部</span>${sel("facHome", [["", "无"], ...state.locs.map((l) => [l.id, l.name])], locById(f.home) ? f.home : "")}</label></div>
-    <div class="field"><span>势力等级 <b id="facPowLab">${f.power}</b></span>${gaugeHTML({ min: 1, max: 5, value: f.power, attrs: 'data-facpow="1"', label: "势力等级" })}</div>
-    <label class="field"><span>理念</span><textarea id="facIdeo" rows="2" maxlength="80">${esc(f.ideology)}</textarea></label>
-    <p class="small">${f.favored ? `成员使用「${SYSTEMS[f.favored].name}」体系时，威力 +5%。` : "没有偏好体系，成员没有额外加成。"}</p>
-    <h4 class="sub">对其他势力的态度</h4>
+    <div class="fgrid"><label class="field"><span>${t("偏好体系")}</span>${sel("facFav", [["", t("无偏好")], ...SYS_IDS.map((k) => [k, t(SYSTEMS[k].name)])], f.favored || "")}</label><label class="field"><span>${t("总部")}</span>${sel("facHome", [["", t("无")], ...state.locs.map((l) => [l.id, l.name])], locById(f.home) ? f.home : "")}</label></div>
+    <div class="field"><span>${t("势力等级")} <b id="facPowLab">${f.power}</b></span>${gaugeHTML({ min: 1, max: 5, value: f.power, attrs: 'data-facpow="1"', label: t("势力等级") })}</div>
+    <label class="field"><span>${t("理念")}</span><textarea id="facIdeo" rows="2" maxlength="80">${esc(f.ideology)}</textarea></label>
+    <p class="small">${f.favored ? t("成员使用「{0}」体系时，威力 +5%。", t(SYSTEMS[f.favored].name)) : t("没有偏好体系，成员没有额外加成。")}</p>
+    <h4 class="sub">${t("对其他势力的态度")}</h4>
     <div class="stance-list">${
       state.factions
         .filter((o) => o.id !== f.id)
         .map(
           (o) =>
-            `<div class="stance"><span class="fdot" style="--fc:${facColor(o)}"></span><span>${esc(o.name)}</span><select data-frel="${o.id}" aria-label="对${esc(o.name)}的态度">${Object.entries(
+            `<div class="stance"><span class="fdot" style="--fc:${facColor(o)}"></span><span>${esc(o.name)}</span><select data-frel="${o.id}" aria-label="${t("对")}${esc(o.name)}${t("的态度")}">${Object.entries(
               STANCES,
             )
               .sort((a, b) => b[0] - a[0])
@@ -584,15 +583,15 @@ function renderFacEdit() {
               )
               .join("")}</select></div>`,
         )
-        .join("") || '<p class="small">还没有其他势力。</p>'
+        .join("") || `<p class="small">${t("还没有其他势力。")}</p>`
     }</div>
-    <div class="btnrow tight"><button class="btn" type="button" data-fac-act="del">删除这个势力</button></div></div>`;
+    <div class="btnrow tight"><button class="btn" type="button" data-fac-act="del">${t("删除这个势力")}</button></div></div>`;
 }
 function renderNetFilter() {
   const F = [
-    ["f", "势力关系"],
-    ["c", "角色关系"],
-    ["m", "隶属"],
+    ["f", t("势力关系")],
+    ["c", t("角色关系")],
+    ["m", t("隶属")],
   ];
   $("#netFilter").innerHTML =
     F.map(
@@ -600,7 +599,7 @@ function renderNetFilter() {
         `<button class="chip" type="button" data-net="${k}" aria-pressed="${state.net[k]}">${n}</button>`,
     ).join("") +
     (state.netSel
-      ? '<button class="chip" type="button" data-net="clear">取消高亮</button>'
+      ? `<button class="chip" type="button" data-net="clear">${t("取消高亮")}</button>`
       : "");
 }
 function netLayout(nodes, edges, W, H) {
@@ -725,7 +724,7 @@ function renderNetwork() {
         b: e.b,
         t: "f",
         v: e.v,
-        tip: `${facById(e.a).name} 与 ${facById(e.b).name}：${STANCES[e.v]}`,
+        tip: `${facById(e.a).name} ${t("与")} ${facById(e.b).name}${t("：")}${t(STANCES[e.v])}`,
       });
   });
   state.crel.forEach((e) => {
@@ -736,7 +735,7 @@ function renderNetwork() {
         b: e.b,
         t: "c",
         v: k.v,
-        tip: `${state.roster.find((c) => c.uid === e.a).name} 与 ${state.roster.find((c) => c.uid === e.b).name}：${k.name}`,
+        tip: `${state.roster.find((c) => c.uid === e.a).name} ${t("与")} ${state.roster.find((c) => c.uid === e.b).name}：${t(k.name)}`,
       });
   });
   state.roster.forEach((c) => {
@@ -770,10 +769,10 @@ function renderNetwork() {
       dim = sel && !near.has(nd.id);
     if (nd.k === "f") {
       const f = nd.f;
-      s += `<g class="nt-n f${dim ? " dim" : ""}" data-nid="${f.id}" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})" tabindex="0" role="button" aria-label="势力 ${esc(f.name)}">${sel === f.id ? `<circle r="${nd.r + 6}" class="nt-sel"/>` : ""}<circle r="${nd.r}" style="fill:${facColor(f)};fill-opacity:.22;stroke:${facColor(f)}"/><text class="nt-ft" y="${nd.r + 15}" text-anchor="middle">${esc(f.name)}</text></g>`;
+      s += `<g class="nt-n f${dim ? " dim" : ""}" data-nid="${f.id}" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})" tabindex="0" role="button" aria-label="${t("势力")} ${esc(f.name)}">${sel === f.id ? `<circle r="${nd.r + 6}" class="nt-sel"/>` : ""}<circle r="${nd.r}" style="fill:${facColor(f)};fill-opacity:.22;stroke:${facColor(f)}"/><text class="nt-ft" y="${nd.r + 15}" text-anchor="middle">${esc(f.name)}</text></g>`;
     } else {
       const c = nd.c;
-      s += `<g class="nt-n c${dim ? " dim" : ""}" data-nid="${c.uid}" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})" tabindex="0" role="button" aria-label="角色 ${esc(c.name)}">${sel === c.uid ? `<circle r="14" class="nt-sel"/>` : ""}<circle r="8" style="fill:var(--${c.system})"/><text class="nt-ct" y="22" text-anchor="middle">${esc(c.name)}</text></g>`;
+      s += `<g class="nt-n c${dim ? " dim" : ""}" data-nid="${c.uid}" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})" tabindex="0" role="button" aria-label="${t("角色")} ${esc(c.name)}">${sel === c.uid ? `<circle r="14" class="nt-sel"/>` : ""}<circle r="8" style="fill:var(--${c.system})"/><text class="nt-ct" y="22" text-anchor="middle">${esc(c.name)}</text></g>`;
     }
   });
   svg.innerHTML = s;
@@ -781,11 +780,11 @@ function renderNetwork() {
 function renderRelEdit() {
   const el = $("#relEdit"),
     R = state.roster;
-  const head = `<div class="panel-h"><h3>角色关系</h3><small>${state.crel.length} 条</small></div>`;
+  const head = `<div class="panel-h"><h3>${t("角色关系")}</h3><small>${state.crel.length} ${t("条")}</small></div>`;
   if (R.length < 2) {
     el.innerHTML =
       head +
-      '<div class="body"><p class="small">名册里至少要有两名角色才能建立关系。可以在角色工坊里存入角色，或点左侧的「一键生成群像」。</p></div>';
+      `<div class="body"><p class="small">${t("名册里至少要有两名角色才能建立关系。可以在角色工坊里存入角色，或点左侧的「一键生成群像」。")}</p></div>`;
     return;
   }
   const opts = R.map(
@@ -802,15 +801,15 @@ function renderRelEdit() {
   el.innerHTML =
     head +
     `<div class="body">
-    <div class="relform"><select id="relA" aria-label="角色甲">${opts}</select><select id="relKind" aria-label="关系类型">${REL_KINDS.map((k) => `<option value="${k.id}">${k.name}</option>`).join("")}</select><select id="relB" aria-label="角色乙">${opts}</select></div>
-    <div class="btnrow tight"><button class="btn primary" type="button" data-rel-act="add">建立关系</button><button class="btn" type="button" data-rel-act="auto">自动补全关系</button></div>
+    <div class="relform"><select id="relA" aria-label="${t("角色甲")}">${opts}</select><select id="relKind" aria-label="${t("关系类型")}">${REL_KINDS.map((k) => `<option value="${k.id}">${esc(t(k.name))}</option>`).join("")}</select><select id="relB" aria-label="${t("角色乙")}">${opts}</select></div>
+    <div class="btnrow tight"><button class="btn primary" type="button" data-rel-act="add">${t("建立关系")}</button><button class="btn" type="button" data-rel-act="auto">${t("自动补全关系")}</button></div>
     <ul class="rel-list">${
       list
         .map(({ e, i, a, b }) => {
           const k = REL_BY_ID[e.kind];
-          return `<li class="${k.v > 0 ? "pos" : k.v < 0 ? "neg" : "neu"}"><span class="tag hue c-${a.system}">${esc(a.name)}</span><em>${k.name}</em><span class="tag hue c-${b.system}">${esc(b.name)}</span><button class="btn" type="button" data-rel-del="${i}" aria-label="删除这条关系">删除</button></li>`;
+          return `<li class="${k.v > 0 ? "pos" : k.v < 0 ? "neg" : "neu"}"><span class="tag hue c-${a.system}">${esc(a.name)}</span><em>${t(k.name)}</em><span class="tag hue c-${b.system}">${esc(b.name)}</span><button class="btn" type="button" data-rel-del="${i}" aria-label="${t("删除这条关系")}">${t("删除")}</button></li>`;
         })
-        .join("") || '<li class="none">还没有关系。</li>'
+        .join("") || `<li class="none">${t("还没有关系。")}</li>`
     }</ul></div>`;
   $("#relB").selectedIndex = 1;
 }
@@ -842,7 +841,7 @@ function delFac(id) {
 function castCrowd() {
   const room = 30 - state.roster.length;
   if (room <= 0) {
-    toast("名册已满（30 个），请先删除一些");
+    toast(t("名册已满（30 个），请先删除一些"));
     return;
   }
   const cast = genCast(Math.min(8, room), state.factions, state.locs, 4);
@@ -896,12 +895,12 @@ function bindFac() {
         renderFacAll();
       } else if (fa.dataset.facAct === "del") {
         if (state.factions.length <= 1) {
-          toast("至少保留一个势力");
+          toast(t("至少保留一个势力"));
           return;
         }
         delFac(f.id);
         renderFacAll();
-        toast("已删除势力");
+        toast(t("已删除势力"));
       }
       return;
     }
@@ -912,7 +911,7 @@ function bindFac() {
           b = $("#relB").value,
           kind = $("#relKind").value;
         if (a === b) {
-          toast("请选择两名不同的角色");
+          toast(t("请选择两名不同的角色"));
           return;
         }
         const i = state.crel.findIndex(
@@ -923,7 +922,7 @@ function bindFac() {
         saveUniverse();
         renderNetwork();
         renderRelEdit();
-        toast("已建立关系");
+        toast(t("已建立关系"));
       } else {
         const extra = genRelations(state.roster, state.frel, state.crel);
         state.crel.push(...extra);
@@ -932,8 +931,8 @@ function bindFac() {
         renderRelEdit();
         toast(
           extra.length
-            ? `已补全 ${extra.length} 条关系`
-            : "没有可以补全的关系了",
+            ? t("已补全 {0} 条关系", extra.length)
+            : t("没有可以补全的关系了"),
         );
       }
       return;
@@ -1006,7 +1005,7 @@ function bindFac() {
   });
   $("#btnAddFac").addEventListener("click", () => {
     if (state.factions.length >= 14) {
-      toast("势力最多 14 个");
+      toast(t("势力最多 14 个"));
       return;
     }
     const f = newFaction();
@@ -1022,7 +1021,7 @@ function bindFac() {
     state.netSel = f.id;
     saveUniverse();
     renderFacAll();
-    toast("已新增势力：" + f.name);
+    toast(t("已新增势力：") + f.name);
   });
   $("#btnCast").addEventListener("click", castCrowd);
 }
@@ -1043,31 +1042,31 @@ function renderSquads() {
     const avgT = team.length ? sum(team.map((c) => c.tier)) / team.length : 0,
       avgS = team.length > 1 ? sum(syn) / team.length : 1;
     const opts =
-      `<option value="">选择要加入的角色…</option><option value="__current">当前工坊角色：${esc(state.char.name)}</option>` +
+      `<option value="">${t("选择要加入的角色…")}</option><option value="__current">${t("当前工坊角色")}：${esc(state.char.name)}</option>` +
       state.roster
         .map(
           (c) =>
-            `<option value="${c.uid}">${esc(c.name)}（${SYSTEMS[c.system].name}，位阶 ${c.tier}）</option>`,
+            `<option value="${c.uid}">${esc(c.name)}${t("（")}${t(SYSTEMS[c.system].name)}${t("，")}${t("位阶")} ${c.tier}${t("）")}</option>`,
         )
         .join("") +
-      '<option value="__random">随机生成一名</option>';
+      `<option value="__random">${t("随机生成一名")}</option>`;
     $("#sq" + side.toUpperCase()).innerHTML =
-      `<div class="panel sq-${side}"><div class="panel-h"><h3>${side === "a" ? "甲队" : "乙队"}</h3><small>${team.length} / 5 人${team.length ? `，平均位阶 ${avgT.toFixed(1)}，默契 ${avgS >= 1 ? "+" : ""}${Math.round((avgS - 1) * 100)}%` : ""}</small></div><div class="body">
-      <ul class="members">${team.map((c, i) => `<li class="c-${c.system}"><span class="tag hue">${SYSTEMS[c.system].name}</span><b>${esc(c.name)}</b><span class="small">位阶 ${c.tier}${team.length > 1 ? `，默契 ×${syn[i].toFixed(2)}` : ""}</span><button class="btn" type="button" data-sqdel="${side}:${i}" aria-label="移出小队">移出</button></li>`).join("") || '<li class="none">还没有成员。</li>'}</ul>
-      <div class="inline"><select data-sqsel="${side}" aria-label="选择成员">${opts}</select><button class="btn" type="button" data-sqadd-btn="${side}">加入</button></div>
-      <div class="btnrow tight"><button class="btn" type="button" data-sqrand="${side}">随机补到 4 人</button><button class="btn" type="button" data-sqclear="${side}">清空</button></div>
-      ${facsWith.length ? `<label class="field" style="margin:12px 0 0"><span class="small">按势力填入（取名册中的成员）</span><select data-sqfac="${side}"><option value="">选择势力…</option>${facsWith.map((f) => `<option value="${f.id}">${esc(f.name)}</option>`).join("")}</select></label>` : ""}
+      `<div class="panel sq-${side}"><div class="panel-h"><h3>${side === "a" ? t("甲队") : t("乙队")}</h3><small>${team.length} / 5 ${t("人")}${team.length ? `，${t("平均位阶")} ${avgT.toFixed(1)}，${t("默契")} ${avgS >= 1 ? "+" : ""}${Math.round((avgS - 1) * 100)}%` : ""}</small></div><div class="body">
+      <ul class="members">${team.map((c, i) => `<li class="c-${c.system}"><span class="tag hue">${t(SYSTEMS[c.system].name)}</span><b>${esc(c.name)}</b><span class="small">${t("位阶")} ${c.tier}${team.length > 1 ? `，${t("默契")} ×${syn[i].toFixed(2)}` : ""}</span><button class="btn" type="button" data-sqdel="${side}:${i}" aria-label="${t("移出小队")}">${t("移出")}</button></li>`).join("") || `<li class="none">${t("还没有成员。")}</li>`}</ul>
+      <div class="inline"><select data-sqsel="${side}" aria-label="${t("选择成员")}">${opts}</select><button class="btn" type="button" data-sqadd-btn="${side}">${t("加入")}</button></div>
+      <div class="btnrow tight"><button class="btn" type="button" data-sqrand="${side}">${t("随机补到 4 人")}</button><button class="btn" type="button" data-sqclear="${side}">${t("清空")}</button></div>
+      ${facsWith.length ? `<label class="field" style="margin:12px 0 0"><span class="small">${t("按势力填入（取名册中的成员）")}</span><select data-sqfac="${side}"><option value="">${t("选择势力…")}</option>${facsWith.map((f) => `<option value="${f.id}">${esc(f.name)}</option>`).join("")}</select></label>` : ""}
     </div></div>`;
   });
 }
 function addToSquad(side, val, quiet) {
   if (!val) {
-    toast("请先选择要加入的角色");
+    toast(t("请先选择要加入的角色"));
     return false;
   }
   const team = state.sim.squad[side];
   if (team.length >= 5) {
-    toast("小队最多 5 人");
+    toast(t("小队最多 5 人"));
     return false;
   }
   let ch;
@@ -1085,7 +1084,7 @@ function addToSquad(side, val, quiet) {
     ch = clone(r);
   }
   if (squadKeys().includes(charKey(ch))) {
-    toast("这名角色已经在某支小队中");
+    toast(t("这名角色已经在某支小队中"));
     return false;
   }
   team.push(ch);
@@ -1100,7 +1099,7 @@ function runSquad() {
   const A = state.sim.squad.a.map(clone),
     B = state.sim.squad.b.map(clone);
   if (!A.length || !B.length) {
-    toast("两支小队都至少需要 1 名成员");
+    toast(t("两支小队都至少需要 1 名成员"));
     return;
   }
   const world = clone(simWorld()),
@@ -1119,28 +1118,28 @@ function renderSquadOut(S) {
   const { A, B, world, res, wr } = S,
     out = $("#simOut"),
     pct = (x) => Math.round(x * 100),
-    nm = (i) => (i ? "乙队" : "甲队");
+    nm = (i) => (i ? t("乙队") : t("甲队"));
   const win = res.winner === "A" ? 0 : res.winner === "B" ? 1 : -1;
   const why =
     res.winner === "draw"
-      ? "双方同时倒下，或势均力敌。"
+      ? t("双方同时倒下，或势均力敌。")
       : res.reason === "wipe"
-        ? "对方全员倒下或被现实抹去。"
-        : "回合耗尽，按全队剩余状态判定。";
+        ? t("对方全员倒下或被现实抹去。")
+        : t("回合耗尽，按全队剩余状态判定。");
   const mvp = res.F.slice().sort((a, b) => b.dmg - a.dmg)[0];
   const panel = (ti) => {
     const rows = res.F.filter((f) => f.ti === ti);
-    return `<div class="panel duelist ${ti ? "sb" : "sa"}"><h4><span class="side">${nm(ti)}</span>${rows.filter((r) => r.alive).length} / ${rows.length} 人存活</h4>${rows.map((f) => `<div class="mrow c-${f.sys}${f.alive ? "" : " down"}"><div class="mh"><b>${esc(f.name)}</b><span class="tag hue">${SYSTEMS[f.sys].name}</span><span class="small">${f.alive ? "存活" : f.dead === "hp" ? "倒下" : "被抹去"}</span></div>${meterHTML("生命", f.hp, f.hpMax)}${meterHTML("稳定度", f.stb, f.stbMax, f.stb / f.stbMax < 0.3)}<p class="small">输出 ${f.dmg}，击倒 ${f.kills}，治疗 ${f.heal}${rows.length > 1 && f.syn !== 1 ? `，默契 ×${f.syn.toFixed(2)}` : ""}</p></div>`).join("")}</div>`;
+    return `<div class="panel duelist ${ti ? "sb" : "sa"}"><h4><span class="side">${nm(ti)}</span>${rows.filter((r) => r.alive).length} / ${rows.length} ${t("人存活")}</h4>${rows.map((f) => `<div class="mrow c-${f.sys}${f.alive ? "" : " down"}"><div class="mh"><b>${esc(f.name)}</b><span class="tag hue">${t(SYSTEMS[f.sys].name)}</span><span class="small">${f.alive ? t("存活") : f.dead === "hp" ? t("倒下") : t("被抹去")}</span></div>${meterHTML(t("生命"), f.hp, f.hpMax)}${meterHTML(t("稳定度"), f.stb, f.stbMax, f.stb / f.stbMax < 0.3)}<p class="small">${t("输出")} ${f.dmg}，${t("击倒")} ${f.kills}，${t("治疗")} ${f.heal}${rows.length > 1 && f.syn !== 1 ? `，${t("默契")} ×${f.syn.toFixed(2)}` : ""}</p></div>`).join("")}</div>`;
   };
   out.innerHTML = `<div class="simgrid">
-    <div class="banner ${win === 0 ? "ta" : win === 1 ? "tb" : ""}"><h3>${win < 0 ? "平局" : nm(win) + " 获胜"}</h3><p>战场：${esc(world.name)}。共 ${res.rounds} 回合。${why}</p><p class="small">最高输出：${esc(mvp.name)}（${nm(mvp.ti)}），共造成 ${mvp.dmg} 点伤害。</p></div>
+    <div class="banner ${win === 0 ? "ta" : win === 1 ? "tb" : ""}"><h3>${win < 0 ? t("平局") : nm(win) + " " + t("获胜")}</h3><p>${t("战场")}${t("：")}${esc(world.name)}${t("。")}${t("共")} ${res.rounds} ${t("回合")}${t("。")}${why}</p><p class="small">${t("最高输出")}${t("：")}${esc(mvp.name)}${t("（")}${nm(mvp.ti)}${t("）")}${t("，")}${t("共造成")} ${mvp.dmg} ${t("点伤害")}${t("。")}</p></div>
     <div class="duelists">${panel(0)}${panel(1)}</div>
-    <div class="panel"><div class="panel-h"><h3>胜率估算</h3><small>同一战场、同样的两队，另外模拟 200 场</small></div><div class="body">
-      <div class="wr" role="img" aria-label="甲队胜率 ${pct(wr.a)}%，平局 ${pct(wr.d)}%，乙队胜率 ${pct(wr.b)}%"><div class="wa" style="flex:${Math.max(wr.a, 0.001)}">${pct(wr.a) >= 8 ? pct(wr.a) + "%" : ""}</div><div class="wd" style="flex:${Math.max(wr.d, 0.001)}">${pct(wr.d) >= 8 ? pct(wr.d) + "%" : ""}</div><div class="wb" style="flex:${Math.max(wr.b, 0.001)}">${pct(wr.b) >= 8 ? pct(wr.b) + "%" : ""}</div></div>
-      <div class="wr-legend"><span>甲队 ${pct(wr.a)}%</span><span>平局 ${pct(wr.d)}%</span><span>乙队 ${pct(wr.b)}%</span></div>
-      <p class="small" style="margin-top:8px">平均 ${wr.rounds.toFixed(1)} 回合分出胜负。${Math.abs(wr.a - wr.b) < 0.12 ? "这是一场势均力敌的对局。" : wr.a > wr.b ? "甲队明显占优。" : "乙队明显占优。"}</p></div></div>
-    <div class="panel"><div class="panel-h"><h3>全队生存率</h3><small>每人取生命与稳定度中较低者，再对全队取平均</small></div><div class="body">${timelineSVG(res.tl)}<div class="legend"><span><i></i>甲队</span><span><i class="b"></i>乙队</span></div></div></div>
-    <div class="panel"><div class="panel-h"><h3>战报</h3><small>蓝线为甲队行动，红线为乙队行动</small></div><div class="body"><ol class="log">${res.log.map((l) => `<li class="${l.t}${l.i === 0 ? " ia" : l.i === 1 ? " ib" : ""}">${l.t === "r" ? l.x : esc(l.x)}</li>`).join("")}</ol></div></div>
+    <div class="panel"><div class="panel-h"><h3>${t("胜率估算")}</h3><small>${t("同一战场、同样的两队，另外模拟 200 场")}</small></div><div class="body">
+      <div class="wr" role="img" aria-label="${t("甲队胜率")} ${pct(wr.a)}%，${t("平局")} ${pct(wr.d)}%，${t("乙队胜率")} ${pct(wr.b)}%"><div class="wa" style="flex:${Math.max(wr.a, 0.001)}">${pct(wr.a) >= 8 ? pct(wr.a) + "%" : ""}</div><div class="wd" style="flex:${Math.max(wr.d, 0.001)}">${pct(wr.d) >= 8 ? pct(wr.d) + "%" : ""}</div><div class="wb" style="flex:${Math.max(wr.b, 0.001)}">${pct(wr.b) >= 8 ? pct(wr.b) + "%" : ""}</div></div>
+      <div class="wr-legend"><span>${t("甲队")} ${pct(wr.a)}%</span><span>${t("平局")} ${pct(wr.d)}%</span><span>${t("乙队")} ${pct(wr.b)}%</span></div>
+      <p class="small" style="margin-top:8px">${t("平均")} ${wr.rounds.toFixed(1)} ${t("回合分出胜负")}。${Math.abs(wr.a - wr.b) < 0.12 ? t("这是一场势均力敌的对局。") : wr.a > wr.b ? t("甲队明显占优。") : t("乙队明显占优。")}</p></div></div>
+    <div class="panel"><div class="panel-h"><h3>${t("全队生存率")}</h3><small>${t("每人取生命与稳定度中较低者，再对全队取平均")}</small></div><div class="body">${timelineSVG(res.tl)}<div class="legend"><span><i></i>${t("甲队")}</span><span><i class="b"></i>${t("乙队")}</span></div></div></div>
+    <div class="panel"><div class="panel-h"><h3>${t("战报")}</h3><small>${t("蓝线为甲队行动，红线为乙队行动")}</small></div><div class="body"><ol class="log">${res.log.map((l) => `<li class="${l.t}${l.i === 0 ? " ia" : l.i === 1 ? " ib" : ""}">${l.t === "r" ? l.x : esc(l.x)}</li>`).join("")}</ol></div></div>
   </div>`;
 }
 function bindSquad() {
@@ -1203,14 +1202,14 @@ function bindSquad() {
     state.sim.res = null;
     renderSquads();
     renderSimOut();
-    if (!state.sim.squad[sf].length) toast("这个势力的成员都在另一支小队里了");
+    if (!state.sim.squad[sf].length) toast(t("这个势力的成员都在另一支小队里了"));
   });
   document.addEventListener("click", (e) => {
     const b = e.target.closest("[data-sqadd]");
     if (!b) return;
     const [side, uid] = b.dataset.sqadd.split(":");
     if (addToSquad(side, uid, true)) {
-      toast(`已加入${side === "a" ? "甲队" : "乙队"}`);
+      toast(t("已加入{0}", side === "a" ? t("甲队") : t("乙队")));
       renderSquads();
       renderSimOut();
     }

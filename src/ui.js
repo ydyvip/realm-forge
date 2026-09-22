@@ -142,7 +142,7 @@ function radarSVG(vals, labels, max, opts = {}) {
         .map((x) => x.toFixed(1))
         .join(","),
     ).join(" ");
-  let s = `<svg viewBox="0 0 ${size} ${size}" class="radar" role="img" aria-label="${esc(opts.aria || "雷达图")}">`;
+  let s = `<svg viewBox="0 0 ${size} ${size}" class="radar" role="img" aria-label="${esc(opts.aria || t("雷达图"))}">`;
   [0.25, 0.5, 0.75, 1].forEach((f) => {
     s += `<polygon class="rd-grid${f === 1 ? " base" : ""}" points="${ring(f)}"/>`;
   });
@@ -242,7 +242,7 @@ function sigilSVG(ch) {
     s += `<circle class="sg-a" cx="60" cy="60" r="5"/><circle class="sg-b" cx="60" cy="60" r="10"/><circle class="sg-a" cx="60" cy="60" r="15" style="stroke-dasharray:6 4"/>`;
   else
     s += `<polygon class="sg-a" points="60,44 50,62 70,62"/><line class="sg-a" x1="46" y1="68" x2="74" y2="68"/><circle class="sg-f" cx="60" cy="56" r="2"/>`;
-  return `<svg class="sigil" viewBox="0 0 120 120" role="img" aria-label="${esc(ch.name)}的印记">${s}</svg>`;
+  return `<svg class="sigil" viewBox="0 0 120 120" role="img" aria-label="${t("{0}的印记", esc(ch.name))}">${s}</svg>`;
 }
 
 function triangleSVG() {
@@ -255,7 +255,7 @@ function triangleSVG() {
     ["anomaly", "psi"],
     ["psi", "magic"],
   ];
-  let s = `<svg viewBox="0 0 360 310" role="img" aria-label="魔法克制异常，异常克制超能力，超能力克制魔法，权能位于中央"><defs><marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="tri-h"/></marker></defs>`;
+  let s = `<svg viewBox="0 0 360 310" role="img" aria-label="${t("魔法克制异常，异常克制超能力，超能力克制魔法，权能位于中央")}"><defs><marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="tri-h"/></marker></defs>`;
   Object.keys(N).forEach((k) => {
     s += `<line class="tri-d" x1="${C[0]}" y1="${C[1]}" x2="${N[k][0]}" y2="${N[k][1]}"/>`;
   });
@@ -278,9 +278,9 @@ function triangleSVG() {
     s += `<text class="tri-s" x="${(mx + (nx / nl) * 18).toFixed(1)}" y="${(my + (ny / nl) * 18 + 4).toFixed(1)}" text-anchor="middle">×1.25</text>`;
   });
   Object.keys(N).forEach((k) => {
-    s += `<circle class="tri-n" cx="${N[k][0]}" cy="${N[k][1]}" r="${R}" style="stroke:var(--${k})"/><text class="tri-t" x="${N[k][0]}" y="${N[k][1] + 5}" text-anchor="middle" style="fill:var(--${k})">${names[k]}</text>`;
+    s += `<circle class="tri-n" cx="${N[k][0]}" cy="${N[k][1]}" r="${R}" style="stroke:var(--${k})"/><text class="tri-t" x="${N[k][0]}" y="${N[k][1] + 5}" text-anchor="middle" style="fill:var(--${k})">${t(names[k])}</text>`;
   });
-  s += `<circle class="tri-n" cx="${C[0]}" cy="${C[1]}" r="27" style="stroke:var(--dominion)"/><text class="tri-t" x="${C[0]}" y="${C[1] + 5}" text-anchor="middle" style="fill:var(--dominion)">权能</text><text class="tri-s" x="${C[0]}" y="${C[1] + 46}" text-anchor="middle">对三者 ×1.15，受戒律约束</text></svg>`;
+  s += `<circle class="tri-n" cx="${C[0]}" cy="${C[1]}" r="27" style="stroke:var(--dominion)"/><text class="tri-t" x="${C[0]}" y="${C[1] + 5}" text-anchor="middle" style="fill:var(--dominion)">${t("权能")}</text><text class="tri-s" x="${C[0]}" y="${C[1] + 46}" text-anchor="middle">${t("对三者 ×1.15，受戒律约束")}</text></svg>`;
   return s;
 }
 
@@ -298,14 +298,14 @@ function timelineSVG(tl) {
     tl
       .map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)} ${y(p[k]).toFixed(1)}`)
       .join(" ");
-  let s = `<svg viewBox="0 0 ${W} ${H}" class="tl" role="img" aria-label="双方生存率随回合变化的折线图">`;
+  let s = `<svg viewBox="0 0 ${W} ${H}" class="tl" role="img" aria-label="${t("双方生存率随回合变化的折线图")}">`;
   [0, 0.5, 1].forEach((v) => {
     s += `<line class="g" x1="${L}" x2="${W - Rr}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}"/><text x="${L - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${Math.round(v * 100)}%</text>`;
   });
   const step = Math.max(1, Math.ceil(n / 8));
   for (let i = 0; i < n; i += step)
     s += `<text x="${x(i).toFixed(1)}" y="${H - 8}" text-anchor="middle">${i}</text>`;
-  s += `<text x="${W - Rr}" y="${H - 8}" text-anchor="end" style="opacity:0">回合</text><path class="la" d="${path(0)}"/><path class="lb" d="${path(1)}"/></svg>`;
+  s += `<text x="${W - Rr}" y="${H - 8}" text-anchor="end" style="opacity:0">${t("回合")}</text><path class="la" d="${path(0)}"/><path class="lb" d="${path(1)}"/></svg>`;
   return s;
 }
 
@@ -321,26 +321,26 @@ function presetChips(id) {
   const cur = currentPreset();
   $(id).innerHTML = PRESETS.map(
     (p) =>
-      `<button class="chip" type="button" data-preset="${p.id}" aria-pressed="${!!cur && cur.id === p.id}" title="${esc(p.note)}">${esc(p.name)}</button>`,
+      `<button class="chip" type="button" data-preset="${p.id}" aria-pressed="${!!cur && cur.id === p.id}" title="${esc(t(p.note))}">${esc(t(p.name))}</button>`,
   ).join("");
 }
 function buildDials() {
   const groups = [
     [
       "phys",
-      "物理常数",
-      "重力与时间以 50 为常态，其余以 0 为常态；偏离越远，世界越不正常。",
+      t("物理常数"),
+      t("重力与时间以 50 为常态，其余以 0 为常态；偏离越远，世界越不正常。"),
     ],
-    ["anom", "异象浓度", "驱动魔法、异常、超能力与权能的世界级燃料。"],
+    ["anom", t("异象浓度"), t("驱动魔法、异常、超能力与权能的世界级燃料。")],
   ];
   $("#dials").innerHTML = groups
     .map(
-      ([g, t, s]) =>
-        `<div class="dial-group"><h4>${t}</h4><p>${s}</p>` +
+      ([g, h, s]) =>
+        `<div class="dial-group"><h4>${h}</h4><p>${s}</p>` +
         DIALS.filter((d) => d.group === g)
           .map((d) => {
             const v = state.world.dials[d.id];
-            return `<div class="dial" data-dial-row="${d.id}"><div class="dial-h"><b>${d.name}</b><span class="ro" data-ro="${d.id}"></span></div>${gaugeHTML({ value: v, mode: "dev", base: d.center ? 0.5 : 0, attrs: `data-dial="${d.id}"`, label: d.name })}<div class="dial-f"><span>${d.lo}</span><span>${d.hi}</span></div><p class="hint">${d.hint}</p></div>`;
+            return `<div class="dial" data-dial-row="${d.id}"><div class="dial-h"><b>${esc(t(d.name))}</b><span class="ro" data-ro="${d.id}"></span></div>${gaugeHTML({ value: v, mode: "dev", base: d.center ? 0.5 : 0, attrs: `data-dial="${d.id}"`, label: d.name })}<div class="dial-f"><span>${esc(t(d.lo))}</span><span>${esc(t(d.hi))}</span></div><p class="hint">${esc(t(d.hint))}</p></div>`;
           })
           .join("") +
         "</div>",
@@ -364,14 +364,14 @@ function renderWorldAll(animate) {
     idx = m.index,
     lab = abnLabel(idx);
   const vals = devVector(w),
-    labels = DIALS.map((x) => SHORT[x.id]);
+    labels = DIALS.map((x) => t(SHORT[x.id]));
   DIALS.forEach((dl) => {
     const ro = $(`[data-ro="${dl.id}"]`);
     if (ro) ro.textContent = dialReadout(dl.id, d[dl.id]);
     const row = $(`[data-dial-row="${dl.id}"]`);
     if (row) row.classList.toggle("off", devOf(dl, d[dl.id]) >= 25);
   });
-  const opts = { aria: "八个法则旋钮偏离常识物理的程度", size: 300 };
+  const opts = { aria: t("八个法则旋钮偏离常识物理的程度"), size: 300 };
   if (animate) {
     animateRadar($("#heroRadar"), vals, labels, 100, opts);
     animateRadar($("#worldRadar"), vals, labels, 100, opts);
@@ -386,7 +386,7 @@ function renderWorldAll(animate) {
   $("#heroLab").textContent = lab;
   $("#abnLabel").textContent = lab;
   ["#heroWorld", "#tbWorld"].forEach((s) => {
-    $(s).textContent = w.name || "未命名世界";
+    $(s).textContent = w.name || t("未命名世界");
   });
   const desc = describeWorld(w);
   $("#heroDesc").textContent = desc;
@@ -401,24 +401,25 @@ function renderWorldAll(animate) {
   $("#mods").className = "mods";
   $("#mods").innerHTML = SYS_IDS.map((k) => {
     const v = m.sys[k];
-    return `<div class="mod c-${cols[k]}"><span class="nm">${SYSTEMS[k].name}</span><div class="mini"><i style="width:${clamp((v / 1.9) * 100, 2, 100).toFixed(1)}%"></i><u></u></div><span class="mv">×${v.toFixed(2)}</span></div>`;
+    return `<div class="mod c-${cols[k]}"><span class="nm">${esc(t(SYSTEMS[k].name))}</span><div class="mini"><i style="width:${clamp((v / 1.9) * 100, 2, 100).toFixed(1)}%"></i><u></u></div><span class="mv">×${v.toFixed(2)}</span></div>`;
   }).join("");
   $("#worldStats").innerHTML = [
-    `环境侵蚀 −${m.ambientStb.toFixed(1)} 稳定度/回合`,
-    `因果偏转 ${(m.twist * 100).toFixed(0)}%`,
-    `机动修正 ×${m.mobility.toFixed(2)}`,
-    "反噬率 " +
+    `${t("环境侵蚀")} −${m.ambientStb.toFixed(1)} ${t("稳定度/回合")}`,
+    `${t("因果偏转")} ${(m.twist * 100).toFixed(0)}%`,
+    `${t("机动修正")} ×${m.mobility.toFixed(2)}`,
+    t("反噬率") +
+      " " +
       SYS_IDS.map(
-        (k) => `${SYSTEMS[k].name} ${(m.backlash(k) * 100).toFixed(0)}%`,
+        (k) => `${esc(t(SYSTEMS[k].name))} ${(m.backlash(k) * 100).toFixed(0)}%`,
       ).join(" / "),
   ]
-    .map((t) => `<span class="tag">${t}</span>`)
+    .map((tag) => `<span class="tag">${tag}</span>`)
     .join("");
   const act = PHENOMENA.filter((p) => p.on(d));
   $("#phen").innerHTML = act.length
-    ? act.map((p) => `<li><b>${p.name}</b><p>${p.desc}</p></li>`).join("")
-    : '<li class="none">目前没有明显的异象，这是一个平静得有点无聊的世界。</li>';
-  $("#phenCount").textContent = act.length ? `${act.length} 项生效` : "无";
+    ? act.map((p) => `<li><b>${esc(t(p.name))}</b><p>${esc(t(p.desc))}</p></li>`).join("")
+    : `<li class="none">${t("目前没有明显的异象，这是一个平静得有点无聊的世界。")}</li>`;
+  $("#phenCount").textContent = act.length ? `${t("有")} ${act.length} ${t("项生效")}` : t("无");
   presetChips("#presets");
   presetChips("#heroPresets");
   renderSimHeader();
@@ -432,7 +433,7 @@ function setWorld(w, animate) {
 }
 function renderEvents() {
   $("#evlog").innerHTML = state.events
-    .map((e) => `<li><b>${e.sev}${e.name}</b>${esc(e.text)}</li>`)
+    .map((e) => `<li><b>${e.sev ? t(e.sev) : ""}${t(e.name)}</b>${esc(e.text)}</li>`)
     .join("");
 }
 function rollEvent() {
@@ -468,21 +469,21 @@ function rollEvent() {
 function renderGuideStatic() {
   $("#sysCards").innerHTML = SYS_IDS.map((k) => {
     const s = SYSTEMS[k];
-    return `<article class="sys c-${k}"><h3>${s.name}<small>${s.tag}</small></h3><p>${s.summary}</p><dl class="kv">
-      <div><dt>力量来源</dt><dd>${s.source}</dd></div><div><dt>代价</dt><dd>${s.cost}</dd></div><div><dt>限制</dt><dd>${s.limit}</dd></div>
-      <div><dt>失控</dt><dd>${s.backlash}</dd></div><div><dt>长处</dt><dd>${s.strong}</dd></div><div><dt>短板</dt><dd>${s.weak}</dd></div>
-      <div><dt>依赖旋钮</dt><dd>${s.dial}</dd></div><div><dt>主属性</dt><dd>${s.powerStat}，资源名为「${s.resource}」</dd></div></dl></article>`;
+    return `<article class="sys c-${k}"><h3>${esc(t(s.name))}<small>${esc(t(s.tag))}</small></h3><p>${esc(t(s.summary))}</p><dl class="kv">
+      <div><dt>${t("力量来源")}</dt><dd>${esc(t(s.source))}</dd></div><div><dt>${t("代价")}</dt><dd>${esc(t(s.cost))}</dd></div><div><dt>${t("限制")}</dt><dd>${esc(t(s.limit))}</dd></div>
+      <div><dt>${t("失控")}</dt><dd>${esc(t(s.backlash))}</dd></div><div><dt>${t("长处")}</dt><dd>${esc(t(s.strong))}</dd></div><div><dt>${t("短板")}</dt><dd>${esc(t(s.weak))}</dd></div>
+      <div><dt>${t("依赖旋钮")}</dt><dd>${esc(t(s.dial))}</dd></div><div><dt>${t("主属性")}</dt><dd>${t("{0}，资源名为「{1}」", esc(t(s.powerStat)), esc(t(s.resource)))}</dd></div></dl></article>`;
   }).join("");
   $("#triangle").innerHTML = triangleSVG();
   $("#tierTable").innerHTML =
-    `<thead><tr><th>位阶</th><th>称谓</th><th>大致含义</th><th>解锁的能力域</th></tr></thead><tbody>` +
+    `<thead><tr><th>${t("位阶")}</th><th>${t("称谓")}</th><th>${t("大致含义")}</th><th>${t("解锁的能力域")}</th></tr></thead><tbody>` +
     TIERS.slice(1)
-      .map((t, i) => {
-        const tier = i + 1,
-          doms = DOMAINS.filter((d) => d.minTier === tier)
-            .map((d) => d.name)
-            .join("、");
-        return `<tr><td class="n">${tier}</td><td>${t.n}</td><td>${t.d}</td><td>${doms || "（沿用已解锁的域）"}</td></tr>`;
+      .map((tier, i) => {
+        const n = i + 1,
+          doms = DOMAINS.filter((d) => d.minTier === n)
+            .map((d) => esc(t(d.name)))
+            .join(t("、"));
+        return `<tr><td class="n">${n}</td><td>${esc(t(tier.n))}</td><td>${esc(t(tier.d))}</td><td>${doms || t("（沿用已解锁的域）")}</td></tr>`;
       })
       .join("") +
     "</tbody>";
@@ -497,25 +498,25 @@ function buildCharControls() {
     max: 9,
     value: state.char.tier,
     attrs: 'data-k="tier"',
-    label: "位阶",
+    label: t("位阶"),
   });
   $("#sysPick").innerHTML = SYS_IDS.map(
     (k) =>
-      `<button type="button" class="c-${k}" data-sys="${k}" aria-pressed="false"><b>${SYSTEMS[k].name}</b><span>${SYSTEMS[k].tag}</span></button>`,
+      `<button type="button" class="c-${k}" data-sys="${k}" aria-pressed="false"><b>${esc(t(SYSTEMS[k].name))}</b><span>${esc(t(SYSTEMS[k].tag))}</span></button>`,
   ).join("");
   $("#selOrigin").innerHTML = ORIGINS.map(
-    (o) => `<option value="${o.id}">${o.name}</option>`,
+    (o) => `<option value="${o.id}">${esc(t(o.name))}</option>`,
   ).join("");
   $("#selArch").innerHTML = ARCHETYPES.map(
-    (a) => `<option value="${a.id}">${a.name}</option>`,
+    (a) => `<option value="${a.id}">${esc(t(a.name))}</option>`,
   ).join("");
   $("#attrCtl").innerHTML = ATTRS.map(
     (a) =>
-      `<div class="arow"><span class="lab" title="${a.d}">${a.n}</span>${gaugeHTML({ min: 1, max: 20, value: 10, attrs: `data-attr="${a.k}"`, label: a.n })}<span class="val" data-val="${a.k}"></span></div>`,
+      `<div class="arow"><span class="lab" title="${esc(t(a.d))}">${esc(t(a.n))}</span>${gaugeHTML({ min: 1, max: 20, value: 10, attrs: `data-attr="${a.k}"`, label: a.n })}<span class="val" data-val="${a.k}"></span></div>`,
   ).join("");
   $("#personaCtl").innerHTML = BIG5.map(
     (b) =>
-      `<div class="prow"><div class="pn"><span>${b.n}</span><em data-pval="${b.id}"></em></div><div class="arow p"><span class="l">${b.lo}</span>${gaugeHTML({ min: 0, max: 100, value: 50, mode: "dev", tone: "ink", base: 0.5, attrs: `data-persona="${b.id}"`, label: b.n })}<span class="r">${b.hi}</span></div></div>`,
+      `<div class="prow"><div class="pn"><span>${esc(t(b.n))}</span><em data-pval="${b.id}"></em></div><div class="arow p"><span class="l">${esc(t(b.lo))}</span>${gaugeHTML({ min: 0, max: 100, value: 50, mode: "dev", tone: "ink", base: 0.5, attrs: `data-persona="${b.id}"`, label: b.n })}<span class="r">${esc(t(b.hi))}</span></div></div>`,
   ).join("");
 }
 function refreshAttrVals() {
@@ -529,9 +530,9 @@ function refreshAttrVals() {
   });
   const b = $("#budgetLab");
   b.innerHTML =
-    `已分配 ${d.used} / ${d.budget}` +
+    `${t("已分配")} ${d.used} / ${d.budget}` +
     (d.over
-      ? ` <span class="over">超支 ${d.over}，稳定度上限 −${d.over * 2}</span>`
+      ? ` <span class="over">${t("超支")} ${d.over}，${t("稳定度上限")} −${d.over * 2}</span>`
       : "");
 }
 function syncCharControls() {
@@ -541,17 +542,17 @@ function syncCharControls() {
   const tg = $("#tierGauge input");
   tg.value = ch.tier;
   syncGauge(tg.closest(".gauge"));
-  $("#tierLab").textContent = `${ch.tier}　${TIERS[ch.tier].n}`;
-  $("#tierDesc").textContent = TIERS[ch.tier].d;
+  $("#tierLab").textContent = `${ch.tier}${t("　")}${t(TIERS[ch.tier].n)}`;
+  $("#tierDesc").textContent = t(TIERS[ch.tier].d);
   $$("#sysPick button").forEach((b) =>
     b.setAttribute(
       "aria-pressed",
       b.dataset.sys === ch.system ? "true" : "false",
     ),
   );
-  $("#sysDesc").textContent = SYSTEMS[ch.system].summary;
+  $("#sysDesc").textContent = t(SYSTEMS[ch.system].summary);
   $("#selOrigin").value = ch.origin;
-  $("#originDesc").textContent = `${o.trait.n}：${o.trait.d}`;
+  $("#originDesc").textContent = `${t(o.trait.n)}${t("：")}${t(o.trait.d)}`;
   $("#selArch").value = ch.archetype;
   ATTR_KEYS.forEach((k) => {
     const i = $(`[data-attr="${k}"]`);
@@ -572,10 +573,10 @@ function statHTML(v, l, hot) {
 }
 function abilityHTML(a) {
   if (a.slot === "passive")
-    return `<div class="ab"><div class="ab-h"><b>${a.name}</b><span>被动</span></div><p>${a.desc}。</p></div>`;
-  return `<div class="ab"><div class="ab-h"><b>${a.name}</b><span>${SLOT_NAME[a.slot]}　阶 ${a.rank}</span></div>
-    <div class="tags"><span class="tag">${a.domain}域</span><span class="tag">${a.effect}</span><span class="tag">${a.form}</span><span class="tag">${a.range}</span></div>
-    <p>${a.desc}。触发方式：${a.trigger}。</p>${a.cost ? `<div class="cl"><b>代价</b>${a.cost}</div>` : ""}${a.limit ? `<div class="cl"><b>限制</b>${a.limit}</div>` : ""}</div>`;
+    return `<div class="ab"><div class="ab-h"><b>${esc(a.name)}</b><span>${t("被动")}</span></div><p>${esc(a.desc)}。</p></div>`;
+    return `<div class="ab"><div class="ab-h"><b>${esc(a.name)}</b><span>${t(SLOT_NAME[a.slot])}${t("　")}${t("阶")} ${a.rank}</span></div>
+    <div class="tags"><span class="tag">${esc(t(a.domain))}${t("域")}</span><span class="tag">${esc(t(a.effect))}</span><span class="tag">${esc(t(a.form))}</span><span class="tag">${esc(t(a.range))}</span></div>
+    <p>${esc(a.desc)}。${t("触发方式")}：${esc(t(a.trigger))}。</p>${a.cost ? `<div class="cl"><b>${t("代价")}</b>${esc(t(a.cost))}</div>` : ""}${a.limit ? `<div class="cl"><b>${t("限制")}</b>${esc(t(a.limit))}</div>` : ""}</div>`;
 }
 function renderWorldNote() {
   const el = $("#worldNote");
@@ -586,11 +587,11 @@ function renderWorldNote() {
     v = m.sys[ch.system];
   const cmt =
     v >= 1.3
-      ? "这里几乎是为这种力量准备的土壤。"
+      ? t("这里几乎是为这种力量准备的土壤。")
       : v < 0.8
-        ? "这里的规则在压制这种力量。"
-        : "环境对这种力量的影响有限。";
-  el.innerHTML = `在「${esc(state.world.name)}」中，${sys.name}体系效率为 <b>×${v.toFixed(2)}</b>，环境侵蚀每回合 −${m.ambientStb.toFixed(1)} 稳定度。${cmt}`;
+        ? t("这里的规则在压制这种力量。")
+        : t("环境对这种力量的影响有限。");
+  el.innerHTML = t("在「{0}」中，{1}体系效率为 <b>×{2}</b>，环境侵蚀每回合 −{3} 稳定度。{4}", esc(state.world.name), esc(t(sys.name)), v.toFixed(2), m.ambientStb.toFixed(1), cmt);
 }
 function renderCard() {
   const ch = state.char,
@@ -601,31 +602,31 @@ function renderCard() {
     p = ch.persona;
   const attrRows = ATTRS.map((a) => {
     const mod = o.mods[a.k] || 0;
-    return `<div class="arow"><span class="lab" title="${a.d}">${a.n}</span><div class="mini"><i style="width:${((d.a[a.k] / 24) * 100).toFixed(1)}%"></i></div><span class="val">${d.a[a.k]}${mod ? `<em>${mod > 0 ? "+" : ""}${mod}</em>` : ""}</span></div>`;
+    return `<div class="arow"><span class="lab" title="${esc(t(a.d))}">${esc(t(a.n))}</span><div class="mini"><i style="width:${((d.a[a.k] / 24) * 100).toFixed(1)}%"></i></div><span class="val">${d.a[a.k]}${mod ? `<em>${mod > 0 ? "+" : ""}${mod}</em>` : ""}</span></div>`;
   }).join("");
   const pRows = BIG5.map(
     (b) =>
-      `<div class="arow p"><span class="l">${b.lo}</span><div class="mini"><i style="width:${p[b.id]}%"></i></div><span class="r">${b.hi}</span></div>`,
+      `<div class="arow p"><span class="l">${esc(t(b.lo))}</span><div class="mini"><i style="width:${p[b.id]}%"></i></div><span class="r">${esc(t(b.hi))}</span></div>`,
   ).join("");
-  const price = `<dl class="price"><div><dt>体系反噬</dt><dd>${sys.backlash}</dd></div><div><dt>弱点</dt><dd>${esc(ch.weakness)}</dd></div>${ch.precept ? `<div><dt>戒律</dt><dd>${ch.precept}（违背即失效）</dd></div>` : ""}<div><dt>出身弱点</dt><dd>${o.weak}</dd></div></dl>`;
+  const price = `<dl class="price"><div><dt>${t("体系反噬")}</dt><dd>${esc(t(sys.backlash))}</dd></div><div><dt>${t("弱点")}</dt><dd>${esc(t(ch.weakness))}</dd></div>${ch.precept ? `<div><dt>${t("戒律")}</dt><dd>${esc(t(ch.precept))}${t("（违背即失效）")}</dd></div>` : ""}<div><dt>${t("出身弱点")}</dt><dd>${esc(t(o.weak))}</dd></div></dl>`;
   $("#charCard").innerHTML =
-    `<div class="panel c-${ch.system}"><div class="panel-h"><h3>角色卡</h3><small>种子 ${esc(ch.seed)}</small></div><div class="body">
+    `<div class="panel c-${ch.system}"><div class="panel-h"><h3>${t("角色卡")}</h3><small>${t("种子")} ${esc(ch.seed)}</small></div><div class="body">
     <div class="card-head">${sigilSVG(ch)}<div class="who"><h2>${esc(ch.name)}</h2><p class="ttl">${titleOf(ch)}</p>
-      <div class="tags"><span class="tag hue">${sys.name}</span><span class="tag">位阶 ${ch.tier} ${tier.n}</span><span class="tag">${o.name}</span><span class="tag">${ARCH_BY_ID[ch.archetype].name}</span><span class="tag">${alignOf(p)}</span></div></div></div>
-    <div class="stats">${vstat(ch, "hp", d.hp, "生命")}${vstat(ch, "en", d.en, sys.resource)}${vstat(ch, "stb", d.stb, "稳定度")}${statHTML(d.init, "先攻")}${statHTML(d.def, "防御")}${statHTML(d.score, "综合战力", true)}</div>
+      <div class="tags"><span class="tag hue">${esc(t(sys.name))}</span><span class="tag">${t("位阶")} ${ch.tier} ${esc(t(tier.n))}</span><span class="tag">${esc(t(o.name))}</span><span class="tag">${esc(t(ARCH_BY_ID[ch.archetype].name))}</span><span class="tag">${alignOf(p)}</span></div></div></div>
+    <div class="stats">${vstat(ch, "hp", d.hp, t("生命"))}${vstat(ch, "en", d.en, t(sys.resource))}${vstat(ch, "stb", d.stb, t("稳定度"))}${statHTML(d.init, t("先攻"))}${statHTML(d.def, t("防御"))}${statHTML(d.score, t("综合战力"), true)}</div>
     <div class="worldnote c-${ch.system}" id="worldNote"></div>
-    <div class="cblock"><h4>属性<small>分配值 + 出身修正</small></h4><div class="attr-split"><div class="radar-wrap">${radarSVG(
+    <div class="cblock"><h4>${t("属性")}<small>${t("分配值 + 出身修正")}</small></h4><div class="attr-split"><div class="radar-wrap">${radarSVG(
       ATTR_KEYS.map((k) => d.a[k]),
-      ATTRS.map((a) => a.n),
+      ATTRS.map((a) => t(a.n)),
       24,
-      { ink: true, size: 230, pad: 34, aria: "六维属性雷达图" },
+      { ink: true, size: 230, pad: 34, aria: t("六维属性雷达图") },
     )}</div><div class="attr-list">${attrRows}</div></div></div>
-    <div class="cblock"><h4>构造与出身<small>${o.name}</small></h4><dl class="kv"><div><dt>身体构造</dt><dd>${o.body}</dd></div><div><dt>先天特质</dt><dd><b>${o.trait.n}</b>：${o.trait.d}</dd></div><div><dt>异化度</dt><dd>${d.corruption}%${d.corruption >= 40 ? "，已相当严重" : d.corruption >= 20 ? "，有可见的改变" : "，基本无碍"}</dd></div><div><dt>势力与驻地</dt><dd>${affilText(ch, d)}</dd></div><div><dt>关系</dt><dd>${relText(ch)}</dd></div></dl></div>
+    <div class="cblock"><h4>${t("构造与出身")}<small>${esc(t(o.name))}</small></h4><dl class="kv"><div><dt>${t("身体构造")}</dt><dd>${esc(t(o.body))}</dd></div><div><dt>${t("先天特质")}</dt><dd><b>${esc(t(o.trait.n))}</b>${t("：")}${esc(t(o.trait.d))}</dd></div><div><dt>${t("异化度")}</dt><dd>${d.corruption}%${d.corruption >= 40 ? t("，已相当严重") : d.corruption >= 20 ? t("，有可见的改变") : t("，基本无碍")}</dd></div><div><dt>${t("势力与驻地")}</dt><dd>${affilText(ch, d)}</dd></div><div><dt>${t("关系")}</dt><dd>${relText(ch)}</dd></div></dl></div>
     <div class="cblock">${growthHTML(ch, d)}</div>
-    <div class="cblock"><h4>能力<small>域 × 效果 × 形态</small></h4>${ch.abilities.map(abilityHTML).join("")}<h4 style="margin-top:18px">代价与弱点<small>违常必有价</small></h4>${price}</div>
-    <div class="cblock"><h4>性格<small>${alignOf(p)}</small></h4><p>${personaText(ch)}。</p>${pRows}<dl class="kv" style="margin-top:10px"><div><dt>核心动机</dt><dd>${ch.motivation}</dd></div><div><dt>缺陷</dt><dd>${ch.flaw}</dd></div><div><dt>说话方式</dt><dd>${ch.speech}</dd></div><div><dt>习惯</dt><dd>${ch.quirk}</dd></div></dl></div>
-    <div class="cblock"><h4>外观<small>能力会在身体上留下痕迹</small></h4><p>${lookSummary(ch, d)}</p><dl class="kv"><div><dt>异象特征</dt><dd>${manifestOf(ch)}</dd></div><div><dt>出身特征</dt><dd>${originLookOf(ch)}</dd></div></dl></div>
-    <div class="cblock"><h4>背景</h4><p>${esc(bgText(ch, d.fac))}</p></div>
+    <div class="cblock"><h4>${t("能力")}<small>${t("域 × 效果 × 形态")}</small></h4>${ch.abilities.map(abilityHTML).join("")}<h4 style="margin-top:18px">${t("代价与弱点")}<small>${t("违常必有价")}</small></h4>${price}</div>
+    <div class="cblock"><h4>${t("性格")}<small>${alignOf(p)}</small></h4><p>${personaText(ch)}。</p>${pRows}<dl class="kv" style="margin-top:10px"><div><dt>${t("核心动机")}</dt><dd>${esc(t(ch.motivation))}</dd></div><div><dt>${t("缺陷")}</dt><dd>${esc(t(ch.flaw))}</dd></div><div><dt>${t("说话方式")}</dt><dd>${esc(t(ch.speech))}</dd></div><div><dt>${t("习惯")}</dt><dd>${esc(t(ch.quirk))}</dd></div></dl></div>
+    <div class="cblock"><h4>${t("外观")}<small>${t("能力会在身体上留下痕迹")}</small></h4><p>${lookSummary(ch, d)}</p><dl class="kv"><div><dt>${t("异象特征")}</dt><dd>${manifestOf(ch)}</dd></div><div><dt>${t("出身特征")}</dt><dd>${originLookOf(ch)}</dd></div></dl></div>
+    <div class="cblock"><h4>${t("背景")}</h4><p>${esc(bgText(ch, d.fac))}</p></div>
   </div></div>`;
   renderWorldNote();
 }
@@ -645,8 +646,7 @@ function refreshChar(full) {
 function renderRoster() {
   const el = $("#roster");
   if (!state.roster.length) {
-    el.innerHTML =
-      '<div class="empty">名册还是空的。创建一个喜欢的角色后点「存入名册」，或到「势力关系」页一键生成群像。</div>';
+    el.innerHTML = `<div class="empty">${t("名册还是空的。创建一个喜欢的角色后点「存入名册」，或到「势力关系」页一键生成群像。")}</div>`;
     return;
   }
   el.innerHTML = state.roster
@@ -655,7 +655,7 @@ function renderRoster() {
         d = derive(c),
         f = state.factions.find((x) => x.id === c.factionId),
         l = state.locs.find((x) => x.id === c.locId);
-      return `<div class="rcard c-${c.system}">${sigilSVG(c)}<div><b>${esc(c.name)}</b><p class="small">${s.name}，位阶 ${c.tier} ${TIERS[c.tier].n}，战力 ${d.score}<br>${ORIGIN_BY_ID[c.origin].name}${f ? "，" + esc(f.name) : ""}${l ? "，驻于" + esc(l.name) : ""}</p></div><div class="acts"><button class="btn" type="button" data-load="${c.uid}">载入</button><button class="btn" type="button" data-fight="${c.uid}">作为对手</button><button class="btn" type="button" data-sqadd="a:${c.uid}">入甲队</button><button class="btn" type="button" data-sqadd="b:${c.uid}">入乙队</button><button class="btn" type="button" data-del="${c.uid}">删除</button></div></div>`;
+      return `<div class="rcard c-${c.system}">${sigilSVG(c)}<div><b>${esc(c.name)}</b><p class="small">${esc(t(s.name))}，${t("位阶")} ${c.tier} ${esc(t(TIERS[c.tier].n))}，${t("战力")} ${d.score}<br>${esc(t(ORIGIN_BY_ID[c.origin].name))}${f ? "，" + esc(t(f.name)) : ""}${l ? "，" + t("驻于") + esc(t(l.name)) : ""}</p></div><div class="acts"><button class="btn" type="button" data-load="${c.uid}">${t("载入")}</button><button class="btn" type="button" data-fight="${c.uid}">${t("作为对手")}</button><button class="btn" type="button" data-sqadd="a:${c.uid}">${t("入甲队")}</button><button class="btn" type="button" data-sqadd="b:${c.uid}">${t("入乙队")}</button><button class="btn" type="button" data-del="${c.uid}">${t("删除")}</button></div></div>`;
     })
     .join("");
 }
@@ -679,17 +679,17 @@ function renderSimSelects() {
   const opts = (withRandom) =>
     (withRandom
       ? [
-          `<option value="__random">随机对手：${esc(ensureOpp().name)}（${SYSTEMS[ensureOpp().system].name}，位阶 ${ensureOpp().tier}）</option>`,
+          `<option value="__random">${t("随机对手")}${t("：")}${esc(ensureOpp().name)}${t("（")}${esc(t(SYSTEMS[ensureOpp().system].name))}${t("，")}${t("位阶")} ${ensureOpp().tier}${t("）")}</option>`,
         ]
       : []
     )
       .concat([
-        `<option value="__current">当前工坊角色：${esc(state.char.name)}</option>`,
+        `<option value="__current">${t("当前工坊角色")}${t("：")}${esc(state.char.name)}</option>`,
       ])
       .concat(
         state.roster.map(
           (r) =>
-            `<option value="${r.uid}">${esc(r.name)}（${SYSTEMS[r.system].name}，位阶 ${r.tier}）</option>`,
+            `<option value="${r.uid}">${esc(r.name)}${t("（")}${esc(t(SYSTEMS[r.system].name))}${t("，")}${t("位阶")} ${r.tier}${t("）")}</option>`,
         ),
       )
       .join("");
@@ -712,7 +712,7 @@ function simWorld() {
   const loc = state.locs.find((l) => l.id === state.sim.loc);
   if (!loc) return state.world;
   return {
-    name: `${loc.name}（${state.world.name}）`,
+    name: `${loc.name}${t("（")}${state.world.name}${t("）")}`,
     dials: localWorld(state.world, loc).dials,
   };
 }
@@ -720,26 +720,27 @@ function renderSimHeader() {
   const el = $("#simWorld");
   if (!el) return;
   const w = simWorld();
-  el.textContent = `${w.name}，违常指数 ${Math.round(abnormality(w))}`;
+  el.textContent = `${w.name}${t("，")}${t("违常指数")} ${Math.round(abnormality(w))}`;
 }
 function renderSimLoc() {
   if (!state.locs.some((l) => l.id === state.sim.loc)) state.sim.loc = "";
   $("#simLoc").innerHTML =
-    `<option value="">全局世界：${esc(state.world.name)}</option>` +
+    `<option value="">${t("全局世界")}${t("：")}${esc(state.world.name)}</option>` +
     state.locs
       .map(
         (l) =>
-          `<option value="${l.id}">${esc(l.name)}（${LOC_BY_ID[l.type].name}，违常 ${Math.round(abnormality(localWorld(state.world, l)))}）</option>`,
+          `<option value="${l.id}">${esc(l.name)}${t("（")}${esc(t(LOC_BY_ID[l.type].name))}${t("，")}${t("违常")} ${Math.round(abnormality(localWorld(state.world, l)))}${t("）")}</option>`,
       )
       .join("");
   $("#simLoc").value = state.sim.loc;
   const m = worldMods(simWorld());
   $("#simLocNote").textContent =
-    "此处体系效率：" +
-    SYS_IDS.map((k) => `${SYSTEMS[k].name} ×${m.sys[k].toFixed(2)}`).join(
-      "，",
+    t("此处体系效率") +
+    t("：") +
+    SYS_IDS.map((k) => `${esc(t(SYSTEMS[k].name))} ×${m.sys[k].toFixed(2)}`).join(
+      t("，"),
     ) +
-    `；环境侵蚀每回合 −${m.ambientStb.toFixed(1)} 稳定度。`;
+    `${t("；")}${t("环境侵蚀每回合")} −${m.ambientStb.toFixed(1)} ${t("稳定度")}${t("。")}`;
 }
 function revealSim() {
   const el = $("#simOut .banner");
@@ -769,7 +770,7 @@ function renderSimOut() {
     out = $("#simOut");
   const S = S0 && (S0.kind || "duel") === state.sim.mode ? S0 : null;
   if (!S) {
-    out.innerHTML = `<div class="empty" style="margin-top:16px">${state.sim.mode === "squad" ? "组好两支小队后点「开始推演」。" : "选好双方后点「开始推演」。"}</div>`;
+    out.innerHTML = `<div class="empty" style="margin-top:16px">${state.sim.mode === "squad" ? t("组好两支小队后点「开始推演」。") : t("选好双方后点「开始推演」。")}</div>`;
     return;
   }
   if (S.kind === "squad") {
@@ -782,30 +783,30 @@ function renderSimOut() {
   const win = res.winner === "A" ? A : res.winner === "B" ? B : null;
   const why =
     res.winner === "draw"
-      ? "双方势均力敌，未分胜负。"
+      ? t("双方势均力敌，未分胜负。")
       : res.reason === "stb"
-        ? "败者的稳定度耗尽，被现实抹去。"
+        ? t("败者的稳定度耗尽，被现实抹去。")
         : res.reason === "hp"
-          ? "败者的生命耗尽。"
-          : "回合耗尽，按剩余状态判定。";
+          ? t("败者的生命耗尽。")
+          : t("回合耗尽，按剩余状态判定。");
   const pct = (x) => Math.round(x * 100);
   const duelist = (ch, i) => {
     const e = res.end[i],
       s = SYSTEMS[ch.system],
       d = derive(ch);
-    return `<div class="panel duelist ${i ? "sb" : "sa"} c-${ch.system}"><h4><span class="side">${i ? "乙方" : "甲方"}</span>${esc(ch.name)}</h4><div class="tags"><span class="tag hue">${s.name}</span><span class="tag">位阶 ${ch.tier} ${TIERS[ch.tier].n}</span><span class="tag">${ORIGIN_BY_ID[ch.origin].name}</span></div>
-      ${meterHTML("生命", e.hp, e.hpMax)}${meterHTML(s.resource, e.en, e.enMax)}${meterHTML("稳定度", e.stb, e.stbMax, e.stb / e.stbMax < 0.3)}
-      <p class="small" style="margin-top:8px">本世界中的体系效率 ×${m.sys[ch.system].toFixed(2)}，先攻 ${d.init}，综合战力 ${d.score}。</p></div>`;
+    return `<div class="panel duelist ${i ? "sb" : "sa"} c-${ch.system}"><h4><span class="side">${i ? t("乙方") : t("甲方")}</span>${esc(ch.name)}</h4><div class="tags"><span class="tag hue">${esc(t(s.name))}</span><span class="tag">${t("位阶")} ${ch.tier} ${esc(t(TIERS[ch.tier].n))}</span><span class="tag">${esc(t(ORIGIN_BY_ID[ch.origin].name))}</span></div>
+      ${meterHTML(t("生命"), e.hp, e.hpMax)}${meterHTML(t(s.resource), e.en, e.enMax)}${meterHTML(t("稳定度"), e.stb, e.stbMax, e.stb / e.stbMax < 0.3)}
+      <p class="small" style="margin-top:8px">${t("本世界中的体系效率")} ×${m.sys[ch.system].toFixed(2)}，${t("先攻")} ${d.init}，${t("综合战力")} ${d.score}。</p></div>`;
   };
   out.innerHTML = `<div class="simgrid">
-    <div class="banner ${win ? "c-" + win.system : ""}"><h3>${win ? esc(win.name) + " 获胜" : "平局"}</h3><p>战场：${esc(world.name)}。共 ${res.rounds} 回合。${why}</p></div>
+    <div class="banner ${win ? "c-" + win.system : ""}"><h3>${win ? esc(win.name) + " " + t("获胜") : t("平局")}</h3><p>${t("战场")}：${esc(world.name)}。${t("共")} ${res.rounds} ${t("回合")}。${why}</p></div>
     <div class="duelists">${duelist(A, 0)}${duelist(B, 1)}</div>
-    <div class="panel"><div class="panel-h"><h3>胜率估算</h3><small>同一世界、同样的双方，另外模拟 300 场</small></div><div class="body">
-      <div class="wr" role="img" aria-label="甲方胜率 ${pct(wr.a)}%，平局 ${pct(wr.d)}%，乙方胜率 ${pct(wr.b)}%"><div class="wa" style="flex:${Math.max(wr.a, 0.001)}">${pct(wr.a) >= 8 ? pct(wr.a) + "%" : ""}</div><div class="wd" style="flex:${Math.max(wr.d, 0.001)}">${pct(wr.d) >= 8 ? pct(wr.d) + "%" : ""}</div><div class="wb" style="flex:${Math.max(wr.b, 0.001)}">${pct(wr.b) >= 8 ? pct(wr.b) + "%" : ""}</div></div>
-      <div class="wr-legend"><span>甲方 ${esc(A.name)} ${pct(wr.a)}%</span><span>平局 ${pct(wr.d)}%</span><span>乙方 ${esc(B.name)} ${pct(wr.b)}%</span></div>
-      <p class="small" style="margin-top:8px">平均 ${wr.rounds.toFixed(1)} 回合分出胜负。${Math.abs(wr.a - wr.b) < 0.12 ? "这是一场势均力敌的对局。" : wr.a > wr.b ? "甲方明显占优。" : "乙方明显占优。"}</p></div></div>
-    <div class="panel"><div class="panel-h"><h3>生存率曲线</h3><small>取生命与稳定度中较低者，越接近 0 越接近倒下</small></div><div class="body">${timelineSVG(res.tl)}<div class="legend"><span><i></i>甲方 ${esc(A.name)}</span><span><i class="b"></i>乙方 ${esc(B.name)}</span></div></div></div>
-    <div class="panel"><div class="panel-h"><h3>战报</h3><small>蓝线为甲方行动，红线为乙方行动</small></div><div class="body"><ol class="log">${res.log.map((l) => `<li class="${l.t}${l.i === 0 ? " ia" : l.i === 1 ? " ib" : ""}">${l.t === "r" ? l.x : esc(l.x)}</li>`).join("")}</ol></div></div>
+    <div class="panel"><div class="panel-h"><h3>${t("胜率估算")}</h3><small>${t("同一世界、同样的双方，另外模拟 300 场")}</small></div><div class="body">
+      <div class="wr" role="img" aria-label="${t("甲方胜率")} ${pct(wr.a)}%，${t("平局")} ${pct(wr.d)}%，${t("乙方胜率")} ${pct(wr.b)}%"><div class="wa" style="flex:${Math.max(wr.a, 0.001)}">${pct(wr.a) >= 8 ? pct(wr.a) + "%" : ""}</div><div class="wd" style="flex:${Math.max(wr.d, 0.001)}">${pct(wr.d) >= 8 ? pct(wr.d) + "%" : ""}</div><div class="wb" style="flex:${Math.max(wr.b, 0.001)}">${pct(wr.b) >= 8 ? pct(wr.b) + "%" : ""}</div></div>
+      <div class="wr-legend"><span>${t("甲方")} ${esc(A.name)} ${pct(wr.a)}%</span><span>${t("平局")} ${pct(wr.d)}%</span><span>${t("乙方")} ${esc(B.name)} ${pct(wr.b)}%</span></div>
+      <p class="small" style="margin-top:8px">${t("平均")} ${wr.rounds.toFixed(1)} ${t("回合分出胜负")}。${Math.abs(wr.a - wr.b) < 0.12 ? t("这是一场势均力敌的对局。") : wr.a > wr.b ? t("甲方明显占优。") : t("乙方明显占优。")}</p></div></div>
+    <div class="panel"><div class="panel-h"><h3>${t("生存率曲线")}</h3><small>${t("取生命与稳定度中较低者，越接近 0 越接近倒下")}</small></div><div class="body">${timelineSVG(res.tl)}<div class="legend"><span><i></i>${t("甲方")} ${esc(A.name)}</span><span><i class="b"></i>${t("乙方")} ${esc(B.name)}</span></div></div></div>
+    <div class="panel"><div class="panel-h"><h3>${t("战报")}</h3><small>${t("蓝线为甲方行动，红线为乙方行动")}</small></div><div class="body"><ol class="log">${res.log.map((l) => `<li class="${l.t}${l.i === 0 ? " ia" : l.i === 1 ? " ib" : ""}">${l.t === "r" ? l.x : esc(l.x)}</li>`).join("")}</ol></div></div>
   </div>`;
 }
 function renderSim() {
@@ -820,8 +821,8 @@ function renderSim() {
   $("#squadPick").hidden = !sq;
   $("#btnOpp").hidden = sq;
   $("#simHint").textContent = sq
-    ? "小队最多 5 人，队员是加入时的快照。队友之间的关系会带来默契或拖累，宿敌之间会互相多打几分；关系可以在「势力关系」页编辑。"
-    : "每次推演都会用新的随机数打一场完整的对局，并另外模拟数百场来估算胜率。";
+    ? t("小队最多 5 人，队员是加入时的快照。队友之间的关系会带来默契或拖累，宿敌之间会互相多打几分；关系可以在「势力关系」页编辑。")
+    : t("每次推演都会用新的随机数打一场完整的对局，并另外模拟数百场来估算胜率。");
   renderSimHeader();
   renderSimLoc();
   if (sq) renderSquads();
@@ -862,14 +863,14 @@ function saveToRoster() {
   const i = state.roster.findIndex((r) => r.uid === ch.uid);
   if (i >= 0) {
     state.roster[i] = clone(ch);
-    toast("已更新名册中的这个角色");
+    toast(t("已更新名册中的这个角色"));
   } else {
     if (state.roster.length >= 30) {
-      toast("名册已满（30 个），请先删除一些");
+      toast(t("名册已满（30 个），请先删除一些"));
       return;
     }
     state.roster.push(clone(ch));
-    toast("已存入名册");
+    toast(t("已存入名册"));
   }
   saveRoster();
   saveChar();
@@ -905,7 +906,7 @@ function bind() {
     state.world.name = e.target.value.slice(0, 16);
     STORE.set("world", state.world);
     ["#heroWorld", "#tbWorld"].forEach((s) => {
-      $(s).textContent = state.world.name || "未命名世界";
+      $(s).textContent = state.world.name || t("未命名世界");
     });
   });
   $("#btnWorldName").addEventListener("click", () => {
@@ -925,8 +926,8 @@ function bind() {
       ch = state.char;
     if (i.dataset.k === "tier") {
       syncGauge(i.closest(".gauge"));
-      $("#tierLab").textContent = `${i.value}　${TIERS[+i.value].n}`;
-      $("#tierDesc").textContent = TIERS[+i.value].d;
+      $("#tierLab").textContent = `${i.value}${t("　")}${t(TIERS[+i.value].n)}`;
+      $("#tierDesc").textContent = t(TIERS[+i.value].d);
       return;
     }
     if (i.dataset.attr) {
@@ -996,7 +997,7 @@ function bind() {
       if (r) {
         state.char = clone(r);
         refreshChar(true);
-        toast("已载入：" + r.name);
+        toast(t("已载入：") + r.name);
         window.scrollTo({ top: 0 });
       }
       return;
@@ -1021,7 +1022,7 @@ function bind() {
       saveRoster();
       STORE.set("camp", state.camp);
       renderRoster();
-      toast("已删除");
+      toast(t("已删除"));
     }
   });
   $("#btnNewChar").addEventListener("click", () => {
@@ -1031,14 +1032,14 @@ function bind() {
   $("#btnSave").addEventListener("click", saveToRoster);
   $("#btnExport").addEventListener("click", () => {
     $("#ioBox").value = JSON.stringify(state.roster);
-    toast("已生成导出内容，请复制保存");
+    toast(t("已生成导出内容，请复制保存"));
   });
   $("#btnImport").addEventListener("click", () => {
     try {
       const arr = JSON.parse($("#ioBox").value),
         list = (Array.isArray(arr) ? arr : [arr]).filter(validChar);
       if (!list.length) {
-        toast("没有识别到可导入的角色");
+        toast(t("没有识别到可导入的角色"));
         return;
       }
       list.forEach((c) => {
@@ -1051,9 +1052,9 @@ function bind() {
       state.roster = state.roster.slice(0, 30);
       saveRoster();
       renderRoster();
-      toast(`已导入 ${list.length} 个角色`);
+      toast(t("已导入 {0} 个角色", list.length));
     } catch (err) {
-      toast("内容无法解析，请确认粘贴完整");
+      toast(t("内容无法解析，请确认粘贴完整"));
     }
   });
 
@@ -1071,7 +1072,7 @@ function bind() {
     ensureOpp();
     state.sim.b = "__random";
     renderSimSelects();
-    toast("已换了一个随机对手");
+    toast(t("已换了一个随机对手"));
   });
   bindUniverse();
   bindCamp();

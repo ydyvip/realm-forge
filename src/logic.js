@@ -134,14 +134,14 @@ const gMul = (v) => Math.pow(10, ((v - 50) / 50) * 0.7);
 const tMul = (v) => Math.pow(10, (v - 50) / 50);
 function bucket(v) {
   return v <= 10
-    ? "几乎没有"
+    ? t("几乎没有")
     : v <= 30
-      ? "微弱"
+      ? t("微弱")
       : v <= 55
-        ? "显著"
+        ? t("显著")
         : v <= 80
-          ? "浓烈"
-          : "泛滥";
+          ? t("浓烈")
+          : t("泛滥");
 }
 function dialReadout(id, v) {
   if (id === "gravity") return gMul(v).toFixed(2) + " g";
@@ -158,14 +158,14 @@ function abnormality(w) {
 }
 function abnLabel(x) {
   return x < 12
-    ? "常识世界"
+    ? t("常识世界")
     : x < 30
-      ? "轻微异常"
+      ? t("轻微异常")
       : x < 50
-        ? "显著异常"
+        ? t("显著异常")
         : x < 70
-          ? "高危异常"
-          : "法则崩坏边缘";
+          ? t("高危异常")
+          : t("法则崩坏边缘");
 }
 
 const PRESETS = [
