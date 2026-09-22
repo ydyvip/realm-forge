@@ -1,0 +1,876 @@
+<a class="skip" href="#main">跳到内容</a>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true">
+        <circle
+          cx="12"
+          cy="12"
+          r="8.5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.4"
+        />
+        <ellipse
+          cx="12"
+          cy="12"
+          rx="9.5"
+          ry="4.6"
+          transform="rotate(-32 12 12)"
+          fill="none"
+          stroke="var(--red)"
+          stroke-width="1.6"
+        />
+        <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+      </svg>
+      <span class="brand-name">万象工坊</span>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="工坊分区">
+      <button role="tab" data-tab="guide" aria-selected="true">体系总览</button>
+      <button role="tab" data-tab="world" aria-selected="false">
+        世界法则
+      </button>
+      <button role="tab" data-tab="map" aria-selected="false">地图地点</button>
+      <button role="tab" data-tab="fac" aria-selected="false">势力关系</button>
+      <button role="tab" data-tab="char" aria-selected="false">角色工坊</button>
+      <button role="tab" data-tab="camp" aria-selected="false">远征</button>
+      <button role="tab" data-tab="sim" aria-selected="false">推演</button>
+    </nav>
+    <button class="tblock" id="tblock" type="button" title="前往世界法则">
+      <span class="tb-cell"><i>当前世界</i><b id="tbWorld">-</b></span>
+      <span class="tb-cell"
+        ><i>违常指数</i><b class="num" id="tbIndex">0</b></span
+      >
+    </button>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <!-- ============ 体系总览 ============ -->
+  <section id="tab-guide" class="tabpanel">
+    <div class="hero">
+      <div class="hero-text">
+        <h1>先调法则，再造人物，<br />最后让他们碰撞。</h1>
+        <p class="lead">
+          万象工坊是一个可以改写物理定律的沙盒。世界由八个法则旋钮定义，地图上的每个地点还能局部改写它们；魔法、异常、超能力与权能都要付出代价；角色属于势力、彼此之间有恩怨。派一支队伍去远征，他们会在行军中遭遇事件、在战争里改变领土，并随着经历真正成长。
+        </p>
+        <p class="hint-line">点一个世界模板，雷达图会跟着变化。</p>
+        <div class="chips" id="heroPresets"></div>
+        <div class="btnrow">
+          <button class="btn primary" type="button" data-go="world">
+            调整这个世界
+          </button>
+          <button class="btn" type="button" data-go="char">直接创建角色</button>
+        </div>
+      </div>
+      <figure class="hero-fig panel">
+        <div class="panel-h">
+          <h3 id="heroWorld">-</h3>
+          <small>红色 = 偏离常识物理的部分</small>
+        </div>
+        <div class="body">
+          <div id="heroRadar" class="radar-wrap"></div>
+          <div class="hero-read">
+            <span class="num big" id="heroIdx">0</span
+            ><span class="hero-lab" id="heroLab"></span>
+          </div>
+          <p class="small" id="heroDesc"></p>
+        </div>
+      </figure>
+    </div>
+
+    <h2 class="sec">八层结构</h2>
+    <p class="sec-sub">
+      上一层的输出，是下一层的输入。你可以只玩其中一层，也可以让八层一起运转，让一支队伍真正在这个世界里活一遍。
+    </p>
+    <ol class="layers">
+      <li>
+        <h3>法则层</h3>
+        <p>
+          八个旋钮改写世界：重力、时间、空间、熵律、灵能、异常、因果、心念。它们共同输出「违常指数」、各体系的效率修正，以及这个世界里会发生的异象。
+        </p>
+      </li>
+      <li>
+        <h3>空间层</h3>
+        <p>
+          地图由地点与路线组成。每个地点是一种类型（都会、灵脉圣地、裂隙区、时间遗迹……），会在世界旋钮之上再叠加一层局部偏移，所以同一个世界里，相隔一条路线就可能是另一套物理。
+        </p>
+      </li>
+      <li>
+        <h3>体系层</h3>
+        <p>
+          魔法、异常、超能力、权能四套能力逻辑。每一套都必须回答四个问题：力量从哪来？付出什么？受什么限制？失控会怎样？
+        </p>
+      </li>
+      <li>
+        <h3>能力层</h3>
+        <p>
+          能力 = 域 × 效果 × 形态 × 触发 × 代价 ×
+          限制。十八个域（物质到虚无）由位阶逐步解锁，十种效果自由组合，因此能生成的能力几乎不会重复。
+        </p>
+      </li>
+      <li>
+        <h3>角色层</h3>
+        <p>
+          十五种出身决定身体构造与先天特质；六维属性按位阶预算分配；五维性格生成阵营与言行习惯；外观带着能力显现出来的「异象特征」。
+        </p>
+      </li>
+      <li>
+        <h3>社会层</h3>
+        <p>
+          角色隶属于势力，势力之间有同盟与死敌，角色之间有亲人、宿敌与债务。势力会自行宣战、媾和、扩张与衰落，地图上的地点会因此易主——这一切在后台随时间持续演化，不需要玩家推动。
+        </p>
+      </li>
+      <li>
+        <h3>成长层</h3>
+        <p>
+          角色在远征与战斗中获得经验，位阶提升时按这段经历的侧重分配属性点，位阶跨过门槛时能力还会进化出新的形态。经历会留下烙印与个人史，性格也可能被漫长的旅途悄悄改变。
+        </p>
+      </li>
+      <li>
+        <h3>推演层</h3>
+        <p>
+          回合制对抗，支持单挑与最多 5 对 5
+          的小队战，可以指定战场地点，再用蒙特卡洛估算胜率；远征标签页则是同一套引擎的持续版本——每一次行军、每一场遭遇战都在真正修改角色与世界。
+        </p>
+      </li>
+    </ol>
+
+    <h2 class="sec">四条设计准则</h2>
+    <div class="rules">
+      <div>
+        <h3>违常必有价</h3>
+        <p>
+          任何违背常规物理的能力，都要同时声明代价、限制与弱点。没有代价的力量，只会让故事失去张力。
+        </p>
+      </div>
+      <div>
+        <h3>世界定上限，角色定形状</h3>
+        <p>
+          同一个能力，在灵潮都市与灵能荒漠里的强度可以相差三倍。世界决定「能不能」，角色决定「怎么用」。
+        </p>
+      </div>
+      <div>
+        <h3>体系互相克制</h3>
+        <p>
+          魔法克异常，异常克超能力，超能力克魔法；权能凌驾其上，却被自己的戒律束缚。没有绝对的强者。
+        </p>
+      </div>
+      <div>
+        <h3>稳定度是第二条命</h3>
+        <p>
+          精神、信息、概念类攻击与异常侵蚀会消耗稳定度。生命归零是死亡，稳定度归零是被现实抹去。
+        </p>
+      </div>
+    </div>
+
+    <h2 class="sec">四大能力体系</h2>
+    <div class="sys-split">
+      <div id="sysCards" class="sys-cards"></div>
+      <div class="panel tri-panel">
+        <div class="panel-h">
+          <h3>体系克制关系</h3>
+          <small>箭头指向被克制的一方</small>
+        </div>
+        <div class="body">
+          <div id="triangle"></div>
+          <p class="small">
+            克制方威力 ×1.25，被克制方 ×0.8。权能对三者都是
+            ×1.15，反过来被它们攻击时只受
+            ×0.9，但权能会以一定概率违背戒律而遭到反噬。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="sec">位阶</h2>
+    <div class="panel">
+      <div class="body scroll"><table class="tbl" id="tierTable"></table></div>
+    </div>
+
+    <h2 class="sec">规则速查</h2>
+    <details class="panel formula">
+      <summary>展开公式与判定细节</summary>
+      <div class="body">
+        <dl class="kv">
+          <div>
+            <dt>属性预算</dt>
+            <dd>
+              总点数 = 42 + 6 × 位阶；每项 1 至 20（随机生成时不低于
+              3）。超支的每一点会让稳定度上限 −2。最终属性 = 分配值 +
+              出身修正（1 至 24）。
+            </dd>
+          </div>
+          <div>
+            <dt>生命</dt>
+            <dd>30 + 体魄 × 5 + 意志 × 2 + 位阶 × 12</dd>
+          </div>
+          <div>
+            <dt>体系资源</dt>
+            <dd>
+              20 + 意志 × 3 + 智识 × 2 + 位阶 ×
+              8。魔法称灵能，异常称渗流，超能力称精力，权能称权柄。
+            </dd>
+          </div>
+          <div>
+            <dt>稳定度</dt>
+            <dd>40 + 意志 × 3 + 感知 + 出身与被动修正，最低 20。</dd>
+          </div>
+          <div>
+            <dt>核心能力威力</dt>
+            <dd>
+              8 + 位阶 × 2.2 + 主属性 × 1.1。战斗技为其 75%，消耗为核心的 40%。
+            </dd>
+          </div>
+          <div>
+            <dt>命中</dt>
+            <dd>
+              85% + 敏捷差 × 1.5% + 感知差 × 0.5% − 对方闪避，限制在 40% 至
+              97%。敏捷会被重力偏离削弱最多 25%。
+            </dd>
+          </div>
+          <div>
+            <dt>伤害</dt>
+            <dd>
+              基础值 × 世界修正 × 出身加成 × 体系克制 × 抗性 × 随机(0.88 至
+              1.12) × 暴击(1.5)，再减去防御的 60%（异常技能只减 30%）。
+            </dd>
+          </div>
+          <div>
+            <dt>稳定度伤害</dt>
+            <dd>
+              精神、信息、概念域的技能造成伤害的 25% 稳定度伤害；异常体系再加
+              15%。
+            </dd>
+          </div>
+          <div>
+            <dt>因果偏转</dt>
+            <dd>
+              每次攻击有 因果松弛 × 15% 的概率被命运接管：必定暴击或必定落空。
+            </dd>
+          </div>
+          <div>
+            <dt>反噬</dt>
+            <dd>
+              魔法在灵能偏离 55
+              越远越易反噬；异常随异常浓度与空间褶皱上升；超能力在精力低于 25%
+              时暴走；权能视因果松弛而定。
+            </dd>
+          </div>
+          <div>
+            <dt>局部法则</dt>
+            <dd>
+              地点的实际旋钮 = 世界旋钮 + 该地点的偏移（限制在 0 至
+              100）。在某地推演时，一切世界修正都按这里的数值计算。
+            </dd>
+          </div>
+          <div>
+            <dt>小队默契</dt>
+            <dd>
+              队友之间每一级正向关系 +2% 输出，每一级负向关系
+              −3%；同势力的队友每人 +2%。总修正限制在 ×0.85 至 ×1.15。
+            </dd>
+          </div>
+          <div>
+            <dt>宿怨与犹豫</dt>
+            <dd>
+              对阵关系为负的对手，伤害 +4% 每级；对阵关系为正的对手，伤害 −4%
+              每级。
+            </dd>
+          </div>
+          <div>
+            <dt>小队行动</dt>
+            <dd>
+              按先攻排序依次行动。攻击优先选生命低、被自己克制、有仇的目标；辅助技能会去援助全队最虚弱的人。
+            </dd>
+          </div>
+          <div>
+            <dt>白热化</dt>
+            <dd>
+              第 9 回合起，所有伤害每回合递增 7%，保证对局最终会分出胜负。
+            </dd>
+          </div>
+          <div>
+            <dt>势力加成</dt>
+            <dd>成员使用势力偏好的体系时，该体系威力 +5%。</dd>
+          </div>
+          <div>
+            <dt>晋升经验</dt>
+            <dd>
+              升到下一位阶所需经验 = 40 × 位阶 + 10 × 位阶²，晋升时获得 6
+              点属性分配点，按这段经历里各属性被「使用」的次数加权随机分配。
+            </dd>
+          </div>
+          <div>
+            <dt>能力进化</dt>
+            <dd>
+              位阶每跨过一个新域的解锁门槛，有 40%
+              的概率让一项战斗技或辅助技进化为该新域的能力。
+            </dd>
+          </div>
+          <div>
+            <dt>远征检定</dt>
+            <dd>
+              取队伍中该属性最高的两人（次高者打 25%
+              折扣）算出队伍分数，与事件难度比较：成功率 = 50% + (分数 − 难度) ×
+              5%，限制在 8% 至 95% 之间。
+            </dd>
+          </div>
+          <div>
+            <dt>事件难度</dt>
+            <dd>
+              基础难度 = 8 + 2 × 队伍平均位阶 + 局部违常指数 ÷
+              14，再按具体事件调整。
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </details>
+
+    <h2 class="sec">怎么玩</h2>
+    <ol class="howto">
+      <li><b>调世界。</b>选模板或拧旋钮，看违常指数与各体系的效率变化。</li>
+      <li>
+        <b>画地图。</b
+        >生成一张区域地图，给每个地点选类型、指定控制势力，必要时微调局部偏移。
+      </li>
+      <li>
+        <b>立势力。</b
+        >编辑势力的理念与关系；点「一键生成群像」可以直接得到一批有归属、有恩怨的角色。
+      </li>
+      <li>
+        <b>造角色。</b
+        >指定位阶、体系、出身与所属势力，或随机重铸；每一块内容都能单独重掷、手动微调。
+      </li>
+      <li>
+        <b>做推演。</b
+        >选单挑或小队，选一个战场地点，看战报与胜率；换个地点，结果会完全不同。
+      </li>
+      <li>
+        <b>去远征。</b
+        >挑几名角色组成远征队，在地图上行军。路上会遭遇事件、战斗、委托，世界也在后台继续打仗与扩张——回头再看，角色已经不是出发时的样子了。
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ 世界法则 ============ -->
+  <section id="tab-world" class="tabpanel" hidden>
+    <div class="split">
+      <div class="col">
+        <div class="panel">
+          <div class="panel-h">
+            <h3>世界档案</h3>
+            <small>选模板，或从头调</small>
+          </div>
+          <div class="body">
+            <label class="field"
+              ><span>世界名称</span>
+              <span class="inline"
+                ><input
+                  id="worldName"
+                  type="text"
+                  maxlength="16"
+                  autocomplete="off"
+                /><button class="btn" type="button" id="btnWorldName">
+                  随机名
+                </button></span
+              >
+            </label>
+            <div class="chips" id="presets"></div>
+            <div class="btnrow">
+              <button class="btn" type="button" id="btnRandWorld">
+                随机生成整个世界
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-h">
+            <h3>法则旋钮</h3>
+            <small>红线 = 与常识物理的偏离</small>
+          </div>
+          <div class="body" id="dials"></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="panel">
+          <div class="panel-h">
+            <h3>违常读数</h3>
+            <small id="abnLabel"></small>
+          </div>
+          <div class="body">
+            <div class="wr-read">
+              <div id="worldRadar" class="radar-wrap"></div>
+              <div class="wr-num">
+                <span class="num big" id="worldIdx">0</span
+                ><span class="small">违常指数</span>
+              </div>
+            </div>
+            <p id="worldDesc" class="prose"></p>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-h">
+            <h3>体系效率</h3>
+            <small>相对常态的威力倍率</small>
+          </div>
+          <div class="body">
+            <div id="mods"></div>
+            <div class="chips-info" id="worldStats"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-h">
+            <h3>此世界的异象</h3>
+            <small id="phenCount"></small>
+          </div>
+          <div class="body">
+            <ul class="phen" id="phen"></ul>
+            <div class="btnrow">
+              <button class="btn" type="button" id="btnEvent">
+                抽取一次世界事件
+              </button>
+            </div>
+            <ol class="evlog" id="evlog" aria-live="polite"></ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 地图地点 ============ -->
+  <section id="tab-map" class="tabpanel" hidden>
+    <div class="split map-split">
+      <div class="panel">
+        <div class="panel-h">
+          <h3>区域地图</h3>
+          <small>点击选中，拖动可移动地点</small>
+        </div>
+        <div class="body">
+          <div class="map-wrap">
+            <svg
+              id="mapSvg"
+              viewBox="0 0 800 520"
+              role="group"
+              aria-label="区域地图"
+            ></svg>
+          </div>
+          <div class="map-key" id="mapKey"></div>
+          <div class="chips" id="locChips"></div>
+          <div class="btnrow tight">
+            <button class="btn" type="button" id="btnGenMap">
+              按当前世界重新生成地图
+            </button>
+            <button class="btn" type="button" id="btnAddLoc">新增地点</button>
+          </div>
+        </div>
+      </div>
+      <div class="col" id="locPanel"></div>
+    </div>
+  </section>
+
+  <!-- ============ 势力关系 ============ -->
+  <section id="tab-fac" class="tabpanel" hidden>
+    <div class="split fac-split">
+      <div class="col">
+        <div class="panel">
+          <div class="panel-h">
+            <h3>势力</h3>
+            <small id="facCount"></small>
+          </div>
+          <div class="body">
+            <div id="facList" class="fac-list"></div>
+            <div class="btnrow">
+              <button class="btn" type="button" id="btnAddFac">新增势力</button>
+              <button class="btn primary" type="button" id="btnCast">
+                一键生成群像
+              </button>
+            </div>
+            <p class="small">
+              「一键生成群像」会随机创建 8
+              名带有势力、驻地与关系的角色并加入名册，可以立刻拿去组队推演。
+            </p>
+          </div>
+        </div>
+        <div class="panel" id="facEdit"></div>
+      </div>
+      <div class="col">
+        <div class="panel">
+          <div class="panel-h">
+            <h3>关系网</h3>
+            <small>点击节点，高亮它的关系</small>
+          </div>
+          <div class="body">
+            <div class="chips" id="netFilter"></div>
+            <div class="net-wrap">
+              <svg
+                id="netSvg"
+                viewBox="0 0 720 500"
+                role="group"
+                aria-label="势力与角色关系网"
+              ></svg>
+            </div>
+            <div class="legend net-legend">
+              <span><i class="pos"></i>友好、同盟、亲近</span
+              ><span><i class="neg"></i>敌对、死敌、仇怨</span
+              ><span><i class="mem"></i>隶属</span
+              ><span>大圆 = 势力，小点 = 角色（颜色为体系）</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel" id="relEdit"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 角色工坊 ============ -->
+  <section id="tab-char" class="tabpanel" hidden>
+    <div class="split char-split">
+      <div class="col">
+        <div class="panel">
+          <div class="panel-h">
+            <h3>基本设定</h3>
+            <small>改动会立刻反映在右侧角色卡</small>
+          </div>
+          <div class="body">
+            <div class="btnrow tight">
+              <button class="btn primary" type="button" id="btnNewChar">
+                随机重铸全部
+              </button>
+              <button class="btn" type="button" id="btnSave">存入名册</button>
+            </div>
+            <label class="field"
+              ><span>名字</span>
+              <span class="inline"
+                ><input
+                  id="chName"
+                  type="text"
+                  maxlength="12"
+                  autocomplete="off"
+                /><button class="btn" type="button" data-reroll="name">
+                  换一个
+                </button></span
+              >
+            </label>
+            <div class="field">
+              <span>位阶 <b id="tierLab"></b></span>
+              <div id="tierGauge"></div>
+              <p class="small" id="tierDesc"></p>
+            </div>
+            <div class="field">
+              <span>能力体系</span>
+              <div class="syspick" id="sysPick"></div>
+              <p class="small" id="sysDesc"></p>
+            </div>
+            <label class="field"
+              ><span>出身与身体构造</span
+              ><select id="selOrigin"></select>
+              <p class="small" id="originDesc"></p
+            ></label>
+            <label class="field"
+              ><span>定位</span
+              ><select id="selArch"></select
+            ></label>
+            <div class="field">
+              <span>所属势力</span>
+              <span class="inline"
+                ><select id="selFac" aria-label="所属势力"></select
+                ><select
+                  id="selRank"
+                  aria-label="职级"
+                  style="max-width: 6.5em"
+                ></select
+              ></span>
+              <p class="small" id="facDesc"></p>
+            </div>
+            <label class="field"
+              ><span>驻地</span
+              ><select id="selLoc"></select
+            ></label>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-h">
+            <h3>六维属性</h3>
+            <small id="budgetLab"></small>
+          </div>
+          <div class="body">
+            <div id="attrCtl"></div>
+            <div class="btnrow tight">
+              <button class="btn" type="button" data-reroll="attrs">
+                重掷属性分配
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-h">
+            <h3>五维性格</h3>
+            <small>拖动后阵营与性格描述会跟着变</small>
+          </div>
+          <div class="body">
+            <div id="personaCtl"></div>
+            <div class="btnrow tight">
+              <button class="btn" type="button" data-reroll="persona">
+                重掷性格与动机
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-h">
+            <h3>其他内容</h3>
+            <small>逐块重掷，不影响别处</small>
+          </div>
+          <div class="body">
+            <div class="btnrow tight">
+              <button class="btn" type="button" data-reroll="look">
+                重掷外观
+              </button>
+              <button class="btn" type="button" data-reroll="abil">
+                重掷能力
+              </button>
+              <button class="btn" type="button" data-reroll="bg">
+                重掷背景
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col" id="charCard"></div>
+    </div>
+
+    <h2 class="sec">名册</h2>
+    <div id="roster" class="roster"></div>
+    <details class="panel formula">
+      <summary>导入与导出</summary>
+      <div class="body">
+        <p class="small">
+          导出会把整个名册变成一段文字，复制保存即可；把它粘贴回来并点击导入，就能恢复。
+        </p>
+        <textarea
+          id="ioBox"
+          rows="5"
+          spellcheck="false"
+          placeholder="在这里粘贴导入的内容，或点击导出后复制"
+        ></textarea>
+        <div class="btnrow tight">
+          <button class="btn" type="button" id="btnExport">导出名册</button
+          ><button class="btn" type="button" id="btnImport">导入</button>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 远征 ============ -->
+  <section id="tab-camp" class="tabpanel" hidden>
+    <div id="campNoParty" class="panel" hidden>
+      <div class="panel-h">
+        <h3>组建远征队</h3>
+        <small>从名册中选人，指定出发地点</small>
+      </div>
+      <div class="body">
+        <p class="small">
+          远征会真正改变角色：他们在路上获得的经验、伤痕与经历都会保留下来，即使远征结束也不会消失。人数上限
+          6 人。
+        </p>
+        <div id="campBuilder"></div>
+        <label class="field" style="margin-top: 12px"
+          ><span>出发地点</span
+          ><select id="campStartLoc"></select
+        ></label>
+        <div class="btnrow">
+          <button class="btn primary" type="button" id="btnCampStart">
+            开始远征
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="campActive" hidden>
+      <div class="panel">
+        <div class="panel-h">
+          <h3 id="campLocName">-</h3>
+          <small id="campMeta"></small>
+        </div>
+        <div class="body">
+          <div id="campLocLaw"></div>
+          <div class="field" style="margin-top: 14px">
+            <span>补给</span>
+            <div class="mini big"><i id="campSupplyBar"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="campEncounter" class="panel enc" hidden>
+        <div class="panel-h">
+          <h3 id="encTitle">-</h3>
+          <small>遭遇</small>
+        </div>
+        <div class="body">
+          <p id="encText"></p>
+          <div id="encOpts" class="enc-opts"></div>
+        </div>
+      </div>
+
+      <div id="campControls" class="split camp-split" hidden>
+        <div class="col">
+          <div class="panel">
+            <div class="panel-h">
+              <h3>行动</h3>
+              <small id="campRouteNote"></small>
+            </div>
+            <div class="body">
+              <label class="field"
+                ><span>目的地</span
+                ><select id="campDest"></select
+              ></label>
+              <div class="btnrow tight">
+                <button class="btn primary" type="button" id="btnMarchOne">
+                  行军一旬
+                </button>
+                <button class="btn" type="button" id="btnMarchAuto">
+                  连续行军
+                </button>
+              </div>
+              <div class="btnrow tight">
+                <button class="btn" type="button" id="btnRest">
+                  扎营（1 旬）
+                </button>
+                <button class="btn" type="button" id="btnWait1">
+                  等待（1 旬）
+                </button>
+                <button class="btn" type="button" id="btnWait5">
+                  等待 5 旬
+                </button>
+              </div>
+              <div id="campLast" class="camp-last"></div>
+            </div>
+          </div>
+          <div class="panel" id="campQuestPanel"></div>
+          <div class="panel">
+            <div class="panel-h">
+              <h3>远征队</h3>
+              <small id="campPartyMeta"></small>
+            </div>
+            <div class="body">
+              <div id="campPartyList"></div>
+              <div class="inline" style="margin-top: 10px">
+                <select id="campAddSel" aria-label="加入远征队"></select
+                ><button class="btn" type="button" id="btnCampAdd">加入</button>
+              </div>
+              <div class="btnrow tight">
+                <button class="btn" type="button" id="btnCampReset">
+                  重新组队（重置远征）
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="panel">
+            <div class="panel-h">
+              <h3>沿途地图</h3>
+              <small>点击地点前往</small>
+            </div>
+            <div class="body">
+              <div class="map-wrap">
+                <svg
+                  id="campMapSvg"
+                  viewBox="0 0 800 520"
+                  role="group"
+                  aria-label="远征地图"
+                ></svg>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-h">
+              <h3>天下大势</h3>
+              <small id="campWarNote"></small>
+            </div>
+            <div class="body">
+              <div id="campTerritory" class="chips-info"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-h">
+              <h3>纪事</h3>
+              <small>最近发生的事，包含战争与外交</small>
+            </div>
+            <div class="body"><ol id="campChron" class="chron"></ol></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 推演 ============ -->
+  <section id="tab-sim" class="tabpanel" hidden>
+    <div class="panel">
+      <div class="panel-h">
+        <h3>推演场地</h3>
+        <small id="simWorld"></small>
+      </div>
+      <div class="body">
+        <div
+          class="chips"
+          id="simMode"
+          role="group"
+          aria-label="推演模式"
+          style="margin-top: 0"
+        >
+          <button
+            class="chip"
+            type="button"
+            data-mode="duel"
+            aria-pressed="true"
+          >
+            单挑
+          </button>
+          <button
+            class="chip"
+            type="button"
+            data-mode="squad"
+            aria-pressed="false"
+          >
+            小队对抗
+          </button>
+        </div>
+        <label class="field" style="margin-top: 16px"
+          ><span>战场</span
+          ><select id="simLoc"></select>
+          <p class="small" id="simLocNote"></p
+        ></label>
+        <div id="duelPick" class="sim-pick">
+          <label class="field"
+            ><span>甲方</span
+            ><select id="simA"></select
+          ></label>
+          <label class="field"
+            ><span>乙方</span
+            ><select id="simB"></select
+          ></label>
+        </div>
+        <div id="squadPick" class="sim-pick" hidden>
+          <div class="sq" id="sqA"></div>
+          <div class="sq" id="sqB"></div>
+        </div>
+        <div class="btnrow">
+          <button class="btn primary" type="button" id="btnRun">
+            开始推演
+          </button>
+          <button class="btn" type="button" id="btnOpp">换一个随机对手</button>
+          <button class="btn" type="button" data-go="map">去看地图</button>
+        </div>
+        <p class="small" id="simHint">
+          每次推演都会用新的随机数打一场完整的对局，并另外模拟数百场来估算胜率。
+        </p>
+      </div>
+    </div>
+    <div id="simOut"></div>
+  </section>
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
