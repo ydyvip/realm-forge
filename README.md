@@ -6,6 +6,9 @@
 
 `realm-forge.html` 是已经打包好的单文件版本，双击或用浏览器直接打开即可运行，不需要任何构建步骤。所有数据保存在浏览器的 `localStorage` 里（键名前缀 `realmforge:v1:`）。
 
+## 演示页面
+[万象工坊](https://ydyvip.github.io/realm-forge/)
+
 ## 源码结构（`src/` 目录）
 
 ```
