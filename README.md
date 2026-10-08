@@ -1,50 +1,65 @@
-# 万象工坊 · 源代码
+# Realm Forge
 
-一个纯前端（HTML + CSS + 原生 JS，无框架、无构建依赖）的沙盒世界 / 角色 / 战斗推演 / 远征系统。
+A sandbox for designing physics-breaking worlds, the characters who inhabit them, and the wars, journeys, and growth that follow — built entirely in vanilla HTML, CSS, and JavaScript, with no framework and no build dependencies.
 
-## 直接使用
+中文说明见 [README.zh.md](./README.zh.md)。
 
-`realm-forge.html` 是已经打包好的单文件版本，双击或用浏览器直接打开即可运行，不需要任何构建步骤。所有数据保存在浏览器的 `localStorage` 里（键名前缀 `realmforge:v1:`）。
+## Use it now
 
-## 演示页面
-[万象工坊](https://ydyvip.github.io/realm-forge/)
+`realm-forge.html` is a complete, self-contained build. Double-click it or open it in a browser — nothing to install, nothing to compile. All data is saved to the browser's `localStorage` (key prefix `realmforge:v1:`).
 
-## 源码结构（`src/` 目录）
+The app defaults to Chinese; click the language toggle in the top-right corner to switch to English at any time. UI chrome and all *newly generated* content (characters, worlds, factions, maps, expeditions) will be created in whichever language is active. Content generated before a language switch keeps the language it was created in — the same way a character's name doesn't retroactively change when you change an app's display language.
+
+## What it does
+
+Eight layers, each feeding the next:
+
+1. **Physics** — eight dials (gravity, time flow, spatial stability, entropy, aether density, anomaly density, causal rigidity, mind-over-matter) define a world's rules and derive an "Abnormality Index."
+2. **Geography** — a procedurally generated map of places and routes, where each place locally offsets the world's dials.
+3. **Power systems** — four mutually countering frameworks: Magic, Anomaly, Psionics, and Dominion, each with an explicit source, cost, limitation, and failure mode.
+4. **Abilities** — generated from 18 unlockable domains × 10 effects × forms, triggers, and costs.
+5. **Characters** — 15 origins, a tier-budgeted six-stat system, Big Five personalities, and appearance details that reflect a character's power.
+6. **Society** — factions with ideologies and diplomacy that autonomously declare war, make peace, expand, and decline; a relationship web linking characters and factions.
+7. **Growth** — characters earn XP, level up with experience-weighted stat gains, evolve their abilities, and accumulate permanent scars and history.
+8. **Simulation** — a turn-based combat engine (1v1 duels through 5v5 squads) with Monte Carlo win-rate estimation, plus a persistent expedition mode where parties march the map, trigger encounters, and get pulled into the faction wars reshaping the world over time.
+
+## Source structure (`src/`)
 
 ```
 src/
-├─ logic.js   纯逻辑层：世界法则、四大体系、能力生成、角色生成、
-│             推演引擎（单挑/小队）、势力与关系、地图生成、
-│             成长系统、远征（行军/遭遇/战争/领土）——不依赖 DOM，
-│             可以直接在 Node 里 require 测试。
-├─ ui.js      界面层①：SVG 绘制辅助（量规/雷达图/印记/克制三角/
-│             时间线）、世界与角色工坊的渲染与交互、顶部导航。
-├─ ui2.js     界面层②：地图编辑、势力编辑、关系网可视化、
-│             单挑与小队推演的界面。
-├─ ui3.js     界面层③：角色成长展示、远征标签页的完整界面
-│             （组队、行军、遭遇选项、战报、势力版图、纪事）。
-├─ main.js    入口，调用 init()。
-├─ body.html  页面骨架（各标签页的 DOM 结构）。
-└─ style.css  样式（制图纸风格，含浅色/深色主题）。
+├─ logic.js         Pure logic layer: world rules, the four power systems,
+│                    ability generation, character generation, the combat
+│                    engine (duels/squads), factions & relationships, map
+│                    generation, the growth system, and the expedition
+│                    engine (marching/encounters/wars/territory). No DOM
+│                    dependency — can be required directly in Node for testing.
+├─ i18n_strings.js   The Chinese/English dictionary for static UI chrome
+│                    (nav, headings, buttons, help text) and the i18n engine
+│                    that applies it.
+├─ ui.js             UI layer ①: SVG helpers (gauges/radar charts/sigils/
+│                    counter triangle/timeline), world and character forge
+│                    rendering and interaction, top navigation.
+├─ ui2.js            UI layer ②: map editing, faction editing, relationship
+│                    graph visualization, duel and squad simulation UI.
+├─ ui3.js            UI layer ③: character growth display, and the full
+│                    expedition tab (party building, marching, encounter
+│                    choices, battle reports, world state, chronicle).
+├─ main.js           Entry point — calls init().
+├─ body.html          Page skeleton (DOM structure for every tab), with
+│                    data-i18n attributes marking translatable text.
+└─ style.css         Styling (a drafting-paper aesthetic, light/dark themes).
 ```
 
-`logic.js` → `ui.js` → `ui2.js` → `ui3.js` → `main.js` 依次拼接成同一个 `<script>` 标签，彼此之间通过全局函数（`function` 声明会被整体提升）直接调用，没有模块系统，所以文件顺序不能打乱。
+`logic.js` → `i18n_strings.js` → `ui.js` → `ui2.js` → `ui3.js` → `main.js` are concatenated in that order into a single `<script>` tag. They call each other through global functions (function declarations are hoisted across the whole concatenated script), so there's no module system and the file order must not be changed.
 
-## 重新构建
+## Rebuilding
 
 ```bash
 python3 build.py
 ```
 
-会读取 `src/` 下的六个文件，输出覆盖 `realm-forge.html`。改了 `src/` 里任何一个文件后，重新运行这条命令即可看到效果。
+Reads the files above and writes `realm-forge.html`. Run it again after editing anything in `src/` region to see the result. (The script writes to `/mnt/user-data/outputs/realm-forge.html` by default — adjust the output path at the bottom of `build.py` if you're running it outside that environment.)
 
-## 架构速览（与页面上「体系总览」一致）
+## How translation works internally
 
-1. **法则层**——八个旋钮（重力/时间/空间/熵律/灵能/异常/因果/心念）定义世界。
-2. **空间层**——地图由地点+路线组成，每个地点在世界旋钮上叠加局部偏移。
-3. **体系层**——魔法/异常/超能力/权能四套能力逻辑，互相克制。
-4. **能力层**——能力 = 域 × 效果 × 形态 × 触发 × 代价 × 限制。
-5. **角色层**——出身、六维属性、五维性格、外观。
-6. **社会层**——势力、势力关系、角色关系；势力会自行宣战/媾和/扩张/衰落。
-7. **成长层**——经验、晋升、能力进化、烙印与个人史。
-8. **推演层**——回合制对抗引擎，支撑单挑、小队战、远征中的遭遇战。
+Most Chinese/English content lives directly in `logic.js`'s data tables as `{ zh: '...', en: '...' }` pairs (for single values) or `{ zh: [...], en: [...] }` banks of equal length (for random-pick arrays, so the same seed picks the same index in either language — deterministic and balance-neutral). A small set of helpers — `tf()` (translate field), `tb()` (translate bank), and `T(zh, en)` (inline either/or) — resolve these against the current language at render or generation time. Structural/reference data (system names, origin traits, domain names, location types, etc.) is looked up live, so switching language retroactively relabels existing characters and worlds; procedurally generated flavor text (character names, ability names, backstories, chronicle entries) is generated in whichever language was active at creation time and does not retroactively translate, by design.
