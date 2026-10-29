@@ -29,15 +29,16 @@ function fillAffilSelects() {
   const ch = state.char, fac = facById(ch.factionId);
   $('#selFac').innerHTML = `<option value="">${T('无所属势力', 'No faction')}</option>` + state.factions.map((f) => `<option value="${f.id}">${esc(tf(f.name))}</option>`).join('');
   $('#selFac').value = fac ? fac.id : '';
-  { const rl = tb(RANKS).slice(); if (ch.rank && !rl.includes(ch.rank)) rl.unshift(ch.rank); $('#selRank').innerHTML = rl.map((r) => `<option value="${esc(r)}">${esc(r)}</option>`).join(''); }
-  $('#selRank').value = ch.rank || tb(RANKS)[1]; $('#selRank').disabled = !fac;
+  const rank = bankT(RANKS, ch.rank) || tb(RANKS)[1];
+  { const rl = tb(RANKS).slice(); if (rank && !rl.includes(rank)) rl.unshift(rank); $('#selRank').innerHTML = rl.map((r) => `<option value="${esc(r)}">${esc(r)}</option>`).join(''); }
+  $('#selRank').value = rank; $('#selRank').disabled = !fac;
   $('#selLoc').innerHTML = `<option value="">${T('未指定', 'Unassigned')}</option>` + state.locs.map((l) => `<option value="${l.id}">${esc(l.name)}</option>`).join('');
   $('#selLoc').value = locById(ch.locId) ? ch.locId : '';
-  $('#facDesc').textContent = !fac ? T('不隶属任何势力，没有额外加成。', 'Belongs to no faction; no extra bonus.') : !fac.favored ? T(`${tf(fac.kind)}，没有偏好体系。`, `${tf(fac.kind)}. No favored system.`) : fac.favored === ch.system ? T(`${tf(fac.kind)}。使用偏好的「${tf(SYSTEMS[fac.favored].name)}」体系，威力 +5%。`, `${tf(fac.kind)}. Using its favored "${tf(SYSTEMS[fac.favored].name)}" system: power +5%.`) : T(`${tf(fac.kind)}。偏好「${tf(SYSTEMS[fac.favored].name)}」体系，你的体系不同，没有加成。`, `${tf(fac.kind)}. Favors the "${tf(SYSTEMS[fac.favored].name)}" system; yours differs, so no bonus.`);
+  $('#facDesc').textContent = !fac ? T('不隶属任何势力，没有额外加成。', 'Belongs to no faction; no extra bonus.') : !fac.favored ? T(`${bankT(FACTION_KINDS, fac.kind)}，没有偏好体系。`, `${bankT(FACTION_KINDS, fac.kind)}. No favored system.`) : fac.favored === ch.system ? T(`${bankT(FACTION_KINDS, fac.kind)}。使用偏好的「${tf(SYSTEMS[fac.favored].name)}」体系，威力 +5%。`, `${bankT(FACTION_KINDS, fac.kind)}. Using its favored "${tf(SYSTEMS[fac.favored].name)}" system: power +5%.`) : T(`${bankT(FACTION_KINDS, fac.kind)}。偏好「${tf(SYSTEMS[fac.favored].name)}」体系，你的体系不同，没有加成。`, `${bankT(FACTION_KINDS, fac.kind)}. Favors the "${tf(SYSTEMS[fac.favored].name)}" system; yours differs, so no bonus.`);
 }
 function affilText(ch, d) {
   const l = locById(ch.locId);
-  const f = d.fac ? T(`${esc(tf(d.fac.name))}（${esc(ch.rank || tb(RANKS)[1])}）${d.facBonus ? '，本体系威力 +5%' : ''}`, `${esc(tf(d.fac.name))} (${esc(ch.rank || tb(RANKS)[1])})${d.facBonus ? ', +5% power in this system' : ''}`) : T('无所属势力', 'No faction');
+  const f = d.fac ? T(`${esc(tf(d.fac.name))}（${esc(bankT(RANKS, ch.rank) || tb(RANKS)[1])}）${d.facBonus ? '，本体系威力 +5%' : ''}`, `${esc(tf(d.fac.name))} (${esc(bankT(RANKS, ch.rank) || tb(RANKS)[1])})${d.facBonus ? ', +5% power in this system' : ''}`) : T('无所属势力', 'No faction');
   return f + (l ? T(`；驻于${esc(l.name)}`, `; based at ${esc(l.name)}`) : '');
 }
 function relText(ch) {
@@ -108,7 +109,7 @@ function renderLocChips() {
 function locLawHTML(l) {
   const lw = localWorld(state.world, l), m = worldMods(lw), act = PHENOMENA.filter((p) => p.on(lw.dials));
   const rows = DIALS.map((d) => { const off = (l.off && l.off[d.id]) || 0; return `<div class="lrow"><span>${tf(d.name)}</span><span class="rv">${dialReadout(d.id, lw.dials[d.id])}</span><em class="${off ? 'off' : ''}">${off ? (off > 0 ? '+' : '') + off : '—'}</em></div>`; }).join('');
-  const mods = SYS_IDS.map((k) => `<div class="mod c-${k}"><span class="nm">${SYSTEMS[k].name}</span><div class="mini"><i style="width:${clamp(m.sys[k] / 1.9 * 100, 2, 100).toFixed(1)}%"></i><u></u></div><span class="mv">×${m.sys[k].toFixed(2)}</span></div>`).join('');
+  const mods = SYS_IDS.map((k) => `<div class="mod c-${k}"><span class="nm">${tf(SYSTEMS[k].name)}</span><div class="mini"><i style="width:${clamp(m.sys[k] / 1.9 * 100, 2, 100).toFixed(1)}%"></i><u></u></div><span class="mv">×${m.sys[k].toFixed(2)}</span></div>`).join('');
   return `<div class="wr-read"><div class="lrows">${rows}</div><div class="wr-num"><span class="num big">${Math.round(m.index)}</span><span class="small">${T('局部违常指数', 'Local Abnormality')}<br>${abnLabel(m.index)}</span></div></div>
     <div class="mods" style="margin-top:14px">${mods}</div>
     <p class="small" style="margin-top:12px">${T('局部异象：', 'Local phenomena: ')}${act.length ? act.map((p) => `<span class="tag">${tf(p.name)}</span>`).join(' ') : T('无', 'None')}</p>`;
@@ -240,7 +241,7 @@ function renderFacList() {
   $('#facCount').textContent = T(`${state.factions.length} 个势力`, `${state.factions.length} factions`);
   $('#facList').innerHTML = state.factions.map((f) => {
     const n = state.roster.filter((c) => c.factionId === f.id).length, home = locById(f.home);
-    return `<button type="button" class="fcard${f.id === state.selFac ? ' on' : ''}" data-fac="${f.id}" style="--fc:${facColor(f)}"><span class="fdot"></span><span class="fbody"><b>${esc(tf(f.name))}</b><small>${tf(f.kind)}　${'●'.repeat(f.power)}${'○'.repeat(5 - f.power)}${f.favored ? '　' + tf(SYSTEMS[f.favored].name) : ''}　${T(`${n} 人`, n === 1 ? `${n} member` : `${n} members`)}${home ? '　' + esc(home.name) : ''}</small></span></button>`;
+    return `<button type="button" class="fcard${f.id === state.selFac ? ' on' : ''}" data-fac="${f.id}" style="--fc:${facColor(f)}"><span class="fdot"></span><span class="fbody"><b>${esc(tf(f.name))}</b><small>${bankT(FACTION_KINDS, f.kind)}　${'●'.repeat(f.power)}${'○'.repeat(5 - f.power)}${f.favored ? '　' + tf(SYSTEMS[f.favored].name) : ''}　${T(`${n} 人`, n === 1 ? `${n} member` : `${n} members`)}${home ? '　' + esc(home.name) : ''}</small></span></button>`;
   }).join('') || `<div class="empty">${T('还没有势力。', 'No factions yet.')}</div>`;
 }
 function renderFacEdit() {
@@ -250,7 +251,7 @@ function renderFacEdit() {
   const sel = (id, list, cur) => { const L = list.slice(); if (cur && !L.some(([v]) => v === cur)) L.unshift([cur, cur]); return `<select id="${id}">${L.map(([v, n]) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>`; };
   el.innerHTML = `<div class="panel-h"><h3>${T('势力档案', 'Faction Profile')}</h3><small>${T(`名册中有 ${members} 名成员`, `${members} ${members === 1 ? 'member' : 'members'} in the roster`)}</small></div><div class="body">
     <label class="field"><span>${T('名称', 'Name')}</span><span class="inline"><input id="facName" type="text" maxlength="28" value="${esc(tf(f.name))}" autocomplete="off"><button class="btn" type="button" data-fac-act="rename">${T('随机名', 'Randomize')}</button></span></label>
-    <div class="fgrid"><label class="field"><span>${T('类型', 'Type')}</span>${sel('facKind', tb(FACTION_KINDS).map((k) => [k, k]), tf(f.kind))}</label><label class="field"><span>${T('对异常的态度', 'Stance on Anomalies')}</span>${sel('facAtt', tb(ATTITUDES).map((k) => [k, k]), tf(f.attitude))}</label></div>
+    <div class="fgrid"><label class="field"><span>${T('类型', 'Type')}</span>${sel('facKind', tb(FACTION_KINDS).map((k) => [k, k]), bankT(FACTION_KINDS, f.kind))}</label><label class="field"><span>${T('对异常的态度', 'Stance on Anomalies')}</span>${sel('facAtt', tb(ATTITUDES).map((k) => [k, k]), bankT(ATTITUDES, f.attitude))}</label></div>
     <div class="fgrid"><label class="field"><span>${T('偏好体系', 'Favored System')}</span>${sel('facFav', [['', T('无偏好', 'None')], ...SYS_IDS.map((k) => [k, tf(SYSTEMS[k].name)])], f.favored || '')}</label><label class="field"><span>${T('总部', 'Headquarters')}</span>${sel('facHome', [['', T('无', 'None')], ...state.locs.map((l) => [l.id, l.name])], locById(f.home) ? f.home : '')}</label></div>
     <div class="field"><span>${T('势力等级', 'Faction Power')} <b id="facPowLab">${f.power}</b></span>${gaugeHTML({ min: 1, max: 5, value: f.power, attrs: 'data-facpow="1"', label: T('势力等级', 'Faction Power') })}</div>
     <label class="field"><span>${T('理念', 'Ideology')}</span><textarea id="facIdeo" rows="2" maxlength="160">${esc(tf(f.ideology))}</textarea></label>

@@ -53,7 +53,15 @@ src/
 python3 build.py
 ```
 
-会读取 `src/` 下的上述文件，输出到 `realm-forge.html`。改了 `src/` 里任何一个文件后，重新运行这条命令即可看到效果。（脚本默认写到 `/mnt/user-data/outputs/realm-forge.html`；如果在别的环境运行，改一下 `build.py` 末尾的输出路径即可。）
+会读取 `src/` 下的上述文件，输出到 `realm-forge.html`。改了 `src/` 里任何一个文件后，重新运行这条命令即可看到效果。
+
+需要发布带 JavaScript 混淆的版本时（要求已安装 Node.js 与 `npx`）：
+
+```bash
+python3 build.py --obfuscate
+```
+
+混淆会隐藏标识符与字符串字面量，增加随手抄源码的成本，但它只是威慑而非加密——如果源码本身需要保密，请不要公开 `src/`。
 
 ## 翻译是怎么做的
 

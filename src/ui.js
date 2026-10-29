@@ -222,12 +222,14 @@ function syncCharControls() {
   refreshAttrVals(); fillAffilSelects();
 }
 function statHTML(v, l, hot) { return `<div class="stat${hot ? ' hot' : ''}"><b class="num">${v}</b><span>${l}</span></div>`; }
-function abilityHTML(a) {
+function abilityHTML(a, ch) {
   if (a.slot === 'passive') return `<div class="ab"><div class="ab-h"><b>${a.name}</b><span>${tf(SLOT_NAME.passive)}</span></div><p>${a.desc}${T('。', '.')}</p></div>`;
-  const dom = DOMAIN_BY_ID[a.domain], eff = EFFECT_BY_ID[a.effect];
+  const dom = DOMAIN_BY_ID[a.domain], eff = EFFECT_BY_ID[a.effect], sys = SYSTEMS[ch.system];
+  const form = bankT(FORMS, a.form), range = bankT(RANGES, a.range), trigger = bankT(TRIGGERS, a.trigger);
+  const cost = a.cost ? bankT(sys.costs, a.cost) : null, limit = a.limit ? bankT(sys.limits, a.limit) : null;
   return `<div class="ab"><div class="ab-h"><b>${a.name}</b><span>${tf(SLOT_NAME[a.slot])}${T(`　阶 ${a.rank}`, ` · Rank ${a.rank}`)}</span></div>
-    <div class="tags"><span class="tag">${dom ? T(`${tf(dom.name)}域`, `${tf(dom.name)} domain`) : ''}</span><span class="tag">${eff ? tf(eff.name) : ''}</span><span class="tag">${a.form}</span><span class="tag">${a.range}</span></div>
-    <p>${T(`${a.desc}。触发方式：${a.trigger}。`, `${a.desc.charAt(0).toUpperCase() + a.desc.slice(1)}. Trigger: ${a.trigger}.`)}</p>${a.cost ? `<div class="cl"><b>${T('代价', 'Cost')}</b>${a.cost}</div>` : ''}${a.limit ? `<div class="cl"><b>${T('限制', 'Limit')}</b>${a.limit}</div>` : ''}</div>`;
+    <div class="tags"><span class="tag">${dom ? T(`${tf(dom.name)}域`, `${tf(dom.name)} domain`) : ''}</span><span class="tag">${eff ? tf(eff.name) : ''}</span><span class="tag">${form}</span><span class="tag">${range}</span></div>
+    <p>${T(`${a.desc}。触发方式：${trigger}。`, `${a.desc.charAt(0).toUpperCase() + a.desc.slice(1)}. Trigger: ${trigger}.`)}</p>${cost ? `<div class="cl"><b>${T('代价', 'Cost')}</b>${cost}</div>` : ''}${limit ? `<div class="cl"><b>${T('限制', 'Limit')}</b>${limit}</div>` : ''}</div>`;
 }
 function renderWorldNote() {
   const el = $('#worldNote'); if (!el) return;
@@ -249,7 +251,7 @@ function renderCard() {
     <div class="cblock"><h4>${T('属性', 'Stats')}<small>${T('分配值 + 出身修正', 'Allocated + origin modifier')}</small></h4><div class="attr-split"><div class="radar-wrap">${radarSVG(ATTR_KEYS.map((k) => d.a[k]), ATTRS.map((a) => tf(a.n)), 24, { ink: true, size: 230, pad: 34, aria: T('六维属性雷达图', 'Six-stat radar chart') })}</div><div class="attr-list">${attrRows}</div></div></div>
     <div class="cblock"><h4>${T('构造与出身', 'Physiology & Origin')}<small>${tf(o.name)}</small></h4><dl class="kv"><div><dt>${T('身体构造', 'Body')}</dt><dd>${tf(o.body)}</dd></div><div><dt>${T('先天特质', 'Innate Trait')}</dt><dd><b>${tf(o.trait.n)}</b>${T('：', ': ')}${tf(o.trait.d)}</dd></div><div><dt>${T('异化度', 'Corruption')}</dt><dd>${d.corruption}%${corrTxt}</dd></div><div><dt>${T('势力与驻地', 'Faction & Base')}</dt><dd>${affilText(ch, d)}</dd></div><div><dt>${T('关系', 'Relations')}</dt><dd>${relText(ch)}</dd></div></dl></div>
     <div class="cblock">${growthHTML(ch, d)}</div>
-    <div class="cblock"><h4>${T('能力', 'Abilities')}<small>${T('域 × 效果 × 形态', 'Domain × Effect × Form')}</small></h4>${ch.abilities.map(abilityHTML).join('')}<h4 style="margin-top:18px">${T('代价与弱点', 'Cost & Weakness')}<small>${T('违常必有价', 'Every break has a price')}</small></h4>${price}</div>
+    <div class="cblock"><h4>${T('能力', 'Abilities')}<small>${T('域 × 效果 × 形态', 'Domain × Effect × Form')}</small></h4>${ch.abilities.map((a) => abilityHTML(a, ch)).join('')}<h4 style="margin-top:18px">${T('代价与弱点', 'Cost & Weakness')}<small>${T('违常必有价', 'Every break has a price')}</small></h4>${price}</div>
     <div class="cblock"><h4>${T('性格', 'Personality')}<small>${alignOf(p)}</small></h4><p>${personaText(ch)}${T('。', '.')}</p>${pRows}<dl class="kv" style="margin-top:10px"><div><dt>${T('核心动机', 'Core Motivation')}</dt><dd>${ch.motivation}</dd></div><div><dt>${T('缺陷', 'Flaw')}</dt><dd>${ch.flaw}</dd></div><div><dt>${T('说话方式', 'Speech')}</dt><dd>${ch.speech}</dd></div><div><dt>${T('习惯', 'Quirk')}</dt><dd>${ch.quirk}</dd></div></dl></div>
     <div class="cblock"><h4>${T('外观', 'Appearance')}<small>${T('能力会在身体上留下痕迹', 'Power leaves its mark on the body')}</small></h4><p>${lookSummary(ch, d)}</p><dl class="kv"><div><dt>${T('异象特征', 'Anomalous Tell')}</dt><dd>${manifestOf(ch)}</dd></div><div><dt>${T('出身特征', 'Origin Trait')}</dt><dd>${originLookOf(ch)}</dd></div></dl></div>
     <div class="cblock"><h4>${T('背景', 'Background')}</h4><p>${esc(bgText(ch, d.fac))}</p></div>

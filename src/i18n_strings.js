@@ -7,6 +7,7 @@
 const STRINGS = {
   skip: { zh: '跳到内容', en: 'Skip to content' },
   brand: { zh: '万象工坊', en: 'Realm Forge' },
+  'doc.title': { zh: '万象工坊 · 沙盒世界与角色系统', en: 'Realm Forge · Sandbox World & Character System' },
   'nav.aria': { zh: '工坊分区', en: 'Workshop sections' },
   'nav.guide': { zh: '体系总览', en: 'Overview' },
   'nav.world': { zh: '世界法则', en: 'World' },
@@ -202,6 +203,7 @@ function applyI18n() {
     });
   });
   document.documentElement.lang = LANG === 'en' ? 'en' : 'zh-CN';
+  if (STRINGS['doc.title']) document.title = tf(STRINGS['doc.title']);
   const lbl = $('#langToggleLabel'); if (lbl) lbl.textContent = LANG === 'en' ? '中文' : 'EN';
 }
 /* 切换语言后，静态外壳文字走 applyI18n；所有由 JS 生成的动态内容（角色卡、地图、势力、推演……）

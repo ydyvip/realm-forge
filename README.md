@@ -58,7 +58,15 @@ src/
 python3 build.py
 ```
 
-Reads the files above and writes `realm-forge.html`. Run it again after editing anything in `src/` region to see the result. (The script writes to `/mnt/user-data/outputs/realm-forge.html` by default — adjust the output path at the bottom of `build.py` if you're running it outside that environment.)
+Reads the files above and writes `realm-forge.html`. Run it again after editing anything in `src/` to see the result.
+
+For a production build with an obfuscated JavaScript bundle (requires Node.js + `npx`):
+
+```bash
+python3 build.py --obfuscate
+```
+
+Obfuscation hides identifiers and string literals to discourage casual source copying, but it is deterrence rather than encryption — keep `src/` private if the source itself must remain confidential.
 
 ## How translation works internally
 

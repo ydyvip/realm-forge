@@ -16,6 +16,18 @@ function tf(v) { return (v && typeof v === 'object' && !Array.isArray(v) && (typ
 /* tb: 解析一个 {zh:[...],en:[...]} 词库为当前语言的数组；普通数组原样返回。
    zh/en 数组长度必须一致，这样同一个随机种子在两种语言下取到相同下标，生成结果确定且互不影响数值。 */
 function tb(v) { return (v && typeof v === 'object' && !Array.isArray(v) && (Array.isArray(v.zh) || Array.isArray(v.en))) ? (v[LANG] || v.zh || v.en || []) : v; }
+/* bankT: 参考字段可能存成生成时的语言字符串（旧存档/动态生成），按双语词库回译为当前语言。
+   若字段本身已是 {zh,en} 对象（默认势力等），退化为 tf。 */
+function bankT(bank, v) {
+  if (v == null) return v;
+  if (typeof v === 'object') return tf(v);
+  if (bank && Array.isArray(bank.zh) && Array.isArray(bank.en)) {
+    let i = bank.zh.indexOf(v);
+    if (i < 0) i = bank.en.indexOf(v);
+    if (i >= 0) { const cur = tb(bank); return cur[i] != null ? cur[i] : v; }
+  }
+  return v;
+}
 /* T: 就地二选一，用在拼句子的地方 —— T('中文', 'English') */
 function T(zh, en) { return LANG === 'en' ? en : zh; }
 
@@ -508,10 +520,10 @@ function alignOf(p) {
   return L === '中立' && G === '中立' ? '绝对中立' : L + G;
 }
 function bgText(ch, fac) {
-  const b = ch.bg, sys = SYSTEMS[ch.system];
+  const b = ch.bg, sys = SYSTEMS[ch.system], rank = bankT(RANKS, ch.rank);
   const tail = T(
-    fac ? `如今隶属于「${tf(fac.name)}」${ch.rank ? `（${ch.rank}）` : ''}` : `如今${b.faction}`,
-    fac ? `now belongs to "${tf(fac.name)}"${ch.rank ? ` (${ch.rank})` : ''}` : `now ${b.faction}`
+    fac ? `如今隶属于「${tf(fac.name)}」${rank ? `（${rank}）` : ''}` : `如今${b.faction}`,
+    fac ? `now belongs to "${tf(fac.name)}"${rank ? ` (${rank})` : ''}` : `now ${b.faction}`
   );
   return T(
     `${ch.name}出身于${b.place}。${b.trigger}，TA 觉醒了${tf(sys.name)}的力量，${tail}。驱使 TA 前行的是：${ch.motivation}。`,
